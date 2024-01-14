@@ -1,7 +1,4 @@
-from pprint import pprint
-
 from django.contrib import admin
-from django.shortcuts import get_object_or_404
 
 from recipes.models import Recipe, Tag, Ingredient, RecipeIngredient
 
