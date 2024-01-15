@@ -9,7 +9,7 @@ User = get_user_model()
 
 class Tag(models.Model):
     name = models.CharField('Название', max_length=50)
-    color = models.IntegerField('Цвет')
+    color = models.CharField('Цвет', max_length=7)
     slug = models.SlugField('Тег', unique=True, max_length=25)
 
     class Meta:
