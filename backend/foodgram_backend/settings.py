@@ -23,6 +23,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
 
     'rest_framework',
+    'django_filters',
 
     'core.apps.CoreConfig',
     'recipes.apps.RecipesConfig',
@@ -102,6 +103,13 @@ MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 AUTH_USER_MODEL = 'core.User'
+
+REST_FRAMEWORK = {
+#     'DEFAULT_PAGINATION_CLASSES':
+#         'rest_framework.pagination.LimitOffsetPagination',
+#     'PAGE_SIZE': 10,
+    'DEFAULT_FILTER_BACKENDS': ('django_filters.rest_framework.DjangoFilterBackend',),
+}
 
 # Constants for apps
 STRING_LENGTH_LIMIT = 20
