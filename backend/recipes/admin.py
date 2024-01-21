@@ -1,6 +1,6 @@
 from django.contrib import admin
 
-from recipes.models import Recipe, Tag, Ingredient, IngredientRecipe
+from recipes.models import Recipe, Tag, Ingredient, IngredientRecipe, ShoppingCart
 
 
 @admin.register(Ingredient)
@@ -22,4 +22,11 @@ class RecipeAdmin(admin.ModelAdmin):
     inlines = (IngredientsInline,)
 
 
-admin.site.register(Tag)
+@admin.register(Tag)
+class TagAdmin(admin.ModelAdmin):
+    pass
+
+
+@admin.register(ShoppingCart)
+class ShoppingCartAdmin(admin.ModelAdmin):
+    pass

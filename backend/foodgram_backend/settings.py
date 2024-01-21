@@ -28,7 +28,6 @@ INSTALLED_APPS = [
     'users.apps.UsersConfig',
     'recipes.apps.RecipesConfig',
     'favorite.apps.FavoriteConfig',
-    'shopping_cart.apps.ShoppingCartConfig',
 
     'drf_spectacular',
 ]
