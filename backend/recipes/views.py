@@ -1,6 +1,7 @@
 from django.contrib.auth import get_user_model
-from rest_framework import filters, viewsets
+from rest_framework import filters, viewsets, status
 from rest_framework.pagination import LimitOffsetPagination
+from rest_framework.response import Response
 
 from recipes.filters import RecipeFilterSet
 from recipes.serializers import (
@@ -25,6 +26,7 @@ class RecipeViewSet(viewsets.ModelViewSet):
     queryset = Recipe.objects.all()
     pagination_class = LimitOffsetPagination
     filterset_class = RecipeFilterSet
+    http_method_names = ('get', 'post', 'patch', 'delete')
 
     def get_serializer_class(self):
         if self.action in ('create', 'partial_update'):
