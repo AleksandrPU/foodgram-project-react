@@ -27,7 +27,6 @@ INSTALLED_APPS = [
 
     'users.apps.UsersConfig',
     'recipes.apps.RecipesConfig',
-    'favorite.apps.FavoriteConfig',
 
     'drf_spectacular',
 ]
