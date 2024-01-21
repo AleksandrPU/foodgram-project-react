@@ -41,8 +41,7 @@ class Recipe(models.Model):
     name = models.CharField('Название', max_length=200)
     image = models.ImageField('Изображение', upload_to='recipe/images/')
     text = models.TextField('Описание')
-    ingredients = models.ManyToManyField(
-        Ingredient, through='RecipeIngredient', verbose_name='Ингридиенты')
+    ingredients = models.ManyToManyField(Ingredient, through='IngredientRecipe', verbose_name='Ингредиенты')
     tags = models.ManyToManyField(Tag, verbose_name='Теги')
     cooking_time = models.PositiveSmallIntegerField(
         'Время приготовления',
@@ -62,7 +61,7 @@ class Recipe(models.Model):
                 f' от {self.author.username[:settings.STRING_LENGTH_LIMIT]}')
 
 
-class RecipeIngredient(models.Model):
+class IngredientRecipe(models.Model):
     recipe = models.ForeignKey(
         Recipe,
         on_delete=models.CASCADE,

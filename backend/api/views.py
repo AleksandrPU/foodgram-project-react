@@ -1,13 +1,19 @@
+from django.contrib.auth import get_user_model
 from rest_framework import filters, viewsets
 from rest_framework.pagination import LimitOffsetPagination
 
 from api.filters import RecipeFilterSet
 from api.serializers import (
     IngredientSerializer,
-    RecipeSerializer,
+    RecipeReadSerializer,
+    RecipeCreateSerializer,
     TagSerializer
 )
+
 from recipes.models import Ingredient, Recipe, Tag
+
+
+User = get_user_model()
 
 
 class TagViewSet(viewsets.ReadOnlyModelViewSet):
@@ -15,11 +21,18 @@ class TagViewSet(viewsets.ReadOnlyModelViewSet):
     serializer_class = TagSerializer
 
 
-class RecipeViewSet(viewsets.ReadOnlyModelViewSet):
+class RecipeViewSet(viewsets.ModelViewSet):
     queryset = Recipe.objects.all()
-    serializer_class = RecipeSerializer
     pagination_class = LimitOffsetPagination
     filterset_class = RecipeFilterSet
+
+    def get_serializer_class(self):
+        if self.action in ('create', 'partial_update'):
+            return RecipeCreateSerializer
+        return RecipeReadSerializer
+
+    def perform_create(self, serializer):
+        serializer.save(author=self.request.user)
 
 
 class IngredientViewSet(viewsets.ReadOnlyModelViewSet):

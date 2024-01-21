@@ -1,6 +1,6 @@
 from django.contrib import admin
 
-from recipes.models import Recipe, Tag, Ingredient, RecipeIngredient
+from recipes.models import Recipe, Tag, Ingredient, IngredientRecipe
 
 
 @admin.register(Ingredient)
@@ -9,8 +9,9 @@ class IngredientAdmin(admin.ModelAdmin):
     list_filter = ('name',)
 
 
+# todo
 class IngredientsInline(admin.TabularInline):
-    model = RecipeIngredient
+    model = IngredientRecipe
     extra = 1
 
 
