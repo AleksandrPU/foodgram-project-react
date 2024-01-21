@@ -32,7 +32,7 @@ class RecipeViewSet(viewsets.ModelViewSet):
         return RecipeReadSerializer
 
     def perform_create(self, serializer):
-        serializer.save(author=self.request.user)
+        return serializer.save(author=self.request.user)
 
 
 class IngredientViewSet(viewsets.ReadOnlyModelViewSet):

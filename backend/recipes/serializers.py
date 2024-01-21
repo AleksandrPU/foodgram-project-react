@@ -1,4 +1,3 @@
-from pprint import pprint
 import base64
 
 from django.contrib.auth import get_user_model
@@ -119,3 +118,7 @@ class RecipeCreateSerializer(serializers.ModelSerializer):
                 amount=ingredient['amount']
             )
         return recipe
+
+    def to_representation(self, instance):
+        return RecipeReadSerializer(
+            context=self.context).to_representation(instance)
