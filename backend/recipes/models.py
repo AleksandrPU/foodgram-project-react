@@ -90,7 +90,7 @@ class IngredientRecipe(models.Model):
 class Favorite(models.Model):
     user = models.ForeignKey(
         User, verbose_name='Пользователь', on_delete=models.CASCADE)
-    item = models.ForeignKey(
+    recipe = models.ForeignKey(
         Recipe, verbose_name='Рецепт', on_delete=models.CASCADE)
 
     class Meta:
@@ -108,7 +108,7 @@ class Favorite(models.Model):
 class ShoppingCart(models.Model):
     user = models.ForeignKey(
         User, verbose_name='Пользователь', on_delete=models.CASCADE)
-    item = models.ForeignKey(
+    recipe = models.ForeignKey(
         Recipe, verbose_name='Рецепт', on_delete=models.CASCADE)
 
     class Meta:
