@@ -41,7 +41,7 @@ class Recipe(models.Model):
     name = models.CharField('Название', max_length=200)
     image = models.ImageField('Изображение', upload_to='recipe/images/')
     text = models.TextField('Описание')
-    ingredients = models.ManyToManyField(Ingredient, through='IngredientRecipe', verbose_name='Ингредиенты')
+    # ingredients = models.ManyToManyField(Ingredient, through='IngredientRecipe', verbose_name='Ингредиенты')
     tags = models.ManyToManyField(Tag, verbose_name='Теги')
     cooking_time = models.PositiveSmallIntegerField(
         'Время приготовления',
@@ -65,13 +65,13 @@ class IngredientRecipe(models.Model):
     recipe = models.ForeignKey(
         Recipe,
         on_delete=models.CASCADE,
-        related_name='recipes',
+        related_name='ingredients',
         verbose_name='Рецепт'
     )
     ingredient = models.ForeignKey(
         Ingredient,
         on_delete=models.CASCADE,
-        related_name='ingredients',
+        related_name='recipes',
         verbose_name='Ингредиент'
     )
     amount = models.PositiveSmallIntegerField(
@@ -98,11 +98,11 @@ class Favorite(models.Model):
         verbose_name_plural = 'Избранное'
         default_related_name = 'favorites'
         constraints = [models.UniqueConstraint(
-            fields=('user', 'item'), name='unique_user_item')]
+            fields=('user', 'recipe'), name='unique_user_item')]
 
     def __str__(self):
         return (f'{self.user.username[:settings.STRING_LENGTH_LIMIT]} '
-                f'{self.item.name[:settings.STRING_LENGTH_LIMIT]}')
+                f'{self.recipe.name[:settings.STRING_LENGTH_LIMIT]}')
 
 
 class ShoppingCart(models.Model):
@@ -118,4 +118,4 @@ class ShoppingCart(models.Model):
 
     def __str__(self):
         return (f'{self.user.username[:settings.STRING_LENGTH_LIMIT]} '
-                f'{self.item.name[:settings.STRING_LENGTH_LIMIT]}')
+                f'{self.recipe.name[:settings.STRING_LENGTH_LIMIT]}')
