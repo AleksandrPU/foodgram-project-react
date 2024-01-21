@@ -25,11 +25,13 @@ INSTALLED_APPS = [
     'rest_framework',
     'django_filters',
 
-    'core.apps.CoreConfig',
+    'users.apps.UsersConfig',
     'recipes.apps.RecipesConfig',
     'favorite.apps.FavoriteConfig',
     'subscriptions.apps.SubscriptionsConfig',
     'shopping_cart.apps.ShoppingCartConfig',
+
+    'drf_spectacular',
 ]
 
 MIDDLEWARE = [
@@ -102,13 +104,14 @@ MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
-AUTH_USER_MODEL = 'core.User'
+AUTH_USER_MODEL = 'users.User'
 
 REST_FRAMEWORK = {
 #     'DEFAULT_PAGINATION_CLASSES':
 #         'rest_framework.pagination.LimitOffsetPagination',
 #     'PAGE_SIZE': 10,
     'DEFAULT_FILTER_BACKENDS': ('django_filters.rest_framework.DjangoFilterBackend',),
+    'DEFAULT_SCHEMA_CLASS': 'drf_spectacular.openapi.AutoSchema',
 }
 
 # Constants for apps
