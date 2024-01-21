@@ -25,7 +25,6 @@ class IngredientSerializer(serializers.ModelSerializer):
         model = Ingredient
 
 
-# todo
 class IngredientAmountSerializer(serializers.ModelSerializer):
     id = serializers.IntegerField(source='ingredient.id')
     name = serializers.CharField(source='ingredient.name')
@@ -118,6 +117,28 @@ class RecipeCreateSerializer(serializers.ModelSerializer):
                 amount=ingredient['amount']
             )
         return recipe
+
+    def update(self, instance, validated_data):
+        instance.name = validated_data.get('name', instance.name)
+        instance.image = validated_data.get('image', instance.image)
+        instance.text = validated_data.get('text', instance.text)
+        instance.cooking_time = validated_data.get(
+            'cooking_time', instance.cooking_time)
+        if 'tags' in validated_data:
+            tags = validated_data.pop('tags')
+            instance.tags.set(tags)
+        if 'ingredients' in validated_data:
+            for ingredient in instance.ingredients.all():
+                ingredient.delete()
+            ingredients = validated_data.pop('ingredients')
+            for ingredient in ingredients:
+                IngredientRecipe.objects.create(
+                    recipe=instance,
+                    ingredient=ingredient['id'],
+                    amount=ingredient['amount']
+                )
+        instance.save()
+        return instance
 
     def to_representation(self, instance):
         return RecipeReadSerializer(

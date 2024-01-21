@@ -1,7 +1,6 @@
 from django.contrib.auth import get_user_model
-from rest_framework import filters, viewsets, status
+from rest_framework import filters, viewsets
 from rest_framework.pagination import LimitOffsetPagination
-from rest_framework.response import Response
 
 from recipes.filters import RecipeFilterSet
 from recipes.serializers import (
