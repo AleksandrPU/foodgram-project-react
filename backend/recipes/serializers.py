@@ -69,10 +69,16 @@ class RecipeReadSerializer(serializers.ModelSerializer):
         )
 
     def get_is_favorited(self, obj):
-        return self.context['request'].user.favorites.filter(pk=obj.id).exists()
+        user = self.context['request'].user
+        if user.is_authenticated:
+            return user.favorites.filter(pk=obj.id).exists()
+        return False
 
     def get_is_in_shopping_cart(self, obj):
-        return self.context['request'].user.shopping.filter(pk=obj.id).exists()
+        user = self.context['request'].user
+        if user.is_authenticated:
+            return user.shopping.filter(pk=obj.id).exists()
+        return False
 
     def get_image_url(self, obj):
         if obj.image:
