@@ -9,6 +9,7 @@ from recipes.constants import (
     UNIT_MAX_LENGTH,
     STRING_LENGTH_LIMIT,
     RECIPE_MAX_LENGTH,
+    VALIDATOR_MIN_VALUE,
 )
 
 
@@ -55,7 +56,7 @@ class Recipe(models.Model):
     cooking_time = models.PositiveSmallIntegerField(
         'Время приготовления',
         help_text='Время приготовления в минутах',
-        validators=[MinValueValidator(1)]
+        validators=[MinValueValidator(VALIDATOR_MIN_VALUE)]
     )
     pub_date = models.DateTimeField('Дата создания', auto_now_add=True)
 
@@ -84,7 +85,7 @@ class IngredientRecipe(models.Model):
         verbose_name='Ингредиент'
     )
     amount = models.PositiveSmallIntegerField(
-        'Количество', validators=[MinValueValidator(1)])
+        'Количество', validators=[MinValueValidator(VALIDATOR_MIN_VALUE)])
 
     class Meta:
         constraints = [models.UniqueConstraint(
