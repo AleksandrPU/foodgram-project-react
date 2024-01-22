@@ -1,16 +1,24 @@
-from django.conf import settings
 from django.contrib.auth import get_user_model
 from django.core.validators import MinValueValidator
 from django.db import models
+
+from recipes.constants import (
+    COLOR_MAX_LENGTH,
+    TAG_MAX_LENGTH,
+    INGREDIENT_MAX_LENGTH,
+    UNIT_MAX_LENGTH,
+    STRING_LENGTH_LIMIT,
+    RECIPE_MAX_LENGTH,
+)
 
 
 User = get_user_model()
 
 
 class Tag(models.Model):
-    name = models.CharField('Название', max_length=50)
-    color = models.CharField('Цвет', max_length=7)
-    slug = models.SlugField('Тег', unique=True, max_length=25)
+    name = models.CharField('Название', max_length=TAG_MAX_LENGTH)
+    color = models.CharField('Цвет', max_length=COLOR_MAX_LENGTH)
+    slug = models.SlugField('Тег', unique=True, max_length=TAG_MAX_LENGTH)
 
     class Meta:
         verbose_name = 'тег'
@@ -18,12 +26,13 @@ class Tag(models.Model):
         ordering = ('name',)
 
     def __str__(self):
-        return self.name[:settings.STRING_LENGTH_LIMIT]
+        return self.name[:STRING_LENGTH_LIMIT]
 
 
 class Ingredient(models.Model):
-    name = models.CharField('Название', max_length=150)
-    measurement_unit = models.CharField('Единица измерения', max_length=15)
+    name = models.CharField('Название', max_length=INGREDIENT_MAX_LENGTH)
+    measurement_unit = models.CharField(
+        'Единица измерения', max_length=UNIT_MAX_LENGTH)
 
     class Meta:
         verbose_name = 'ингредиент'
@@ -31,14 +40,14 @@ class Ingredient(models.Model):
         ordering = ('name',)
 
     def __str__(self):
-        return (f'{self.name[:settings.STRING_LENGTH_LIMIT]}, '
+        return (f'{self.name[:STRING_LENGTH_LIMIT]}, '
                 f'{self.measurement_unit}')
 
 
 class Recipe(models.Model):
     author = models.ForeignKey(
         User, verbose_name='Автор', on_delete=models.CASCADE)
-    name = models.CharField('Название', max_length=200)
+    name = models.CharField('Название', max_length=RECIPE_MAX_LENGTH)
     image = models.ImageField('Изображение', upload_to='recipe/images/')
     text = models.TextField('Описание')
     # ingredients = models.ManyToManyField(Ingredient, through='IngredientRecipe', verbose_name='Ингредиенты')
@@ -57,8 +66,8 @@ class Recipe(models.Model):
         default_related_name = 'recipes'
 
     def __str__(self):
-        return (f'{self.name[:settings.STRING_LENGTH_LIMIT]}'
-                f' от {self.author.username[:settings.STRING_LENGTH_LIMIT]}')
+        return (f'{self.name[:STRING_LENGTH_LIMIT]}'
+                f' от {self.author.username[:STRING_LENGTH_LIMIT]}')
 
 
 class IngredientRecipe(models.Model):
@@ -101,8 +110,8 @@ class Favorite(models.Model):
             fields=('user', 'recipe'), name='unique_user_item')]
 
     def __str__(self):
-        return (f'{self.user.username[:settings.STRING_LENGTH_LIMIT]} '
-                f'{self.recipe.name[:settings.STRING_LENGTH_LIMIT]}')
+        return (f'{self.user.username[:STRING_LENGTH_LIMIT]} '
+                f'{self.recipe.name[:STRING_LENGTH_LIMIT]}')
 
 
 class ShoppingCart(models.Model):
@@ -117,5 +126,5 @@ class ShoppingCart(models.Model):
         default_related_name = 'shopping'
 
     def __str__(self):
-        return (f'{self.user.username[:settings.STRING_LENGTH_LIMIT]} '
-                f'{self.recipe.name[:settings.STRING_LENGTH_LIMIT]}')
+        return (f'{self.user.username[:STRING_LENGTH_LIMIT]} '
+                f'{self.recipe.name[:STRING_LENGTH_LIMIT]}')
