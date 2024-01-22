@@ -1,4 +1,5 @@
 from django.contrib.auth import get_user_model
+from djoser.serializers import UserCreateSerializer
 from rest_framework import serializers
 
 
@@ -24,3 +25,9 @@ class UserSerializer(serializers.ModelSerializer):
         if user.is_authenticated:
             return user.followers.filter(following__pk=obj.id).exists()
         return False
+
+
+class UserRegistrationSerializer(UserCreateSerializer):
+    class Meta(UserCreateSerializer.Meta):
+        # fields = ('url', 'id', 'email', 'name', 'last_name', 'account_address', 'password', )
+        fields = ('id', 'email', 'username', 'first_name', 'last_name', 'password')
