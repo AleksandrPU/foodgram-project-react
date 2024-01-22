@@ -1,6 +1,9 @@
 import os.path
 from pathlib import Path
 
+# import rest_framework.permissions
+
+# import users.serializers
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -110,12 +113,10 @@ REST_FRAMEWORK = {
 #         'rest_framework.pagination.LimitOffsetPagination',
 #     'PAGE_SIZE': 10,
     'DEFAULT_PERMISSION_CLASSES': (
-        # 'rest_framework.permissions.IsAuthenticated',
         'rest_framework.permissions.AllowAny',
     ),
     'DEFAULT_AUTHENTICATION_CLASSES': (
         'rest_framework.authentication.TokenAuthentication',
-        # 'rest_framework.authentication.BasicAuthentication',
     ),
     'DEFAULT_FILTER_BACKENDS': (
         'django_filters.rest_framework.DjangoFilterBackend',
@@ -126,10 +127,13 @@ REST_FRAMEWORK = {
 DJOSER = {
     'SERIALIZERS': {
         'user_create': 'users.serializers.UserRegistrationSerializer',
-        # 'set_password': 'djoser.serializers.SetPasswordSerializer',
-        # 'current_user': 'djoser.serializers.UserSerializer',
-        # 'token': 'djoser.serializers.TokenSerializer',
-        # 'token_create': 'djoser.serializers.TokenCreateSerializer',
+        # 'user_create': 'users.serializers.UserSerializer',
+        'user': 'users.serializers.UserRegistrationSerializer',
     },
-    # 'LOGIN_FIELD': 'email',
+    'PERMISSIONS': {
+        'user': ['rest_framework.permissions.AllowAny'],
+        'user_list': ['rest_framework.permissions.AllowAny'],
+    },
+    'LOGIN_FIELD': 'email',
+    'HIDE_USERS': False,
 }
