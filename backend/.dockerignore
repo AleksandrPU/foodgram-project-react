@@ -1,0 +1,10 @@
+venv
+.venv
+.git
+db.sqlite3
+.idea
+.pytest_cache
+__pycache__/
+*.py[cod]
+*$py.class
+.env
