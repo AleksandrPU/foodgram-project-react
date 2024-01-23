@@ -3,6 +3,7 @@ from rest_framework import filters, viewsets
 from rest_framework.pagination import LimitOffsetPagination
 
 from recipes.filters import RecipeFilterSet
+from recipes.permissions import IsAuthorOrReadOnly
 from recipes.serializers import (
     IngredientSerializer,
     RecipeReadSerializer,
@@ -26,6 +27,7 @@ class RecipeViewSet(viewsets.ModelViewSet):
     pagination_class = LimitOffsetPagination
     filterset_class = RecipeFilterSet
     http_method_names = ('get', 'post', 'patch', 'delete')
+    permission_classes = IsAuthorOrReadOnly
 
     def get_serializer_class(self):
         if self.action in ('create', 'partial_update'):
