@@ -4,8 +4,8 @@ from django.contrib.auth import get_user_model
 from django.core.files.base import ContentFile
 from rest_framework import serializers
 
-from users.serializers import UserSerializer
-from recipes.models import Recipe, Tag, Ingredient, IngredientRecipe
+from recipes.models import Ingredient, IngredientRecipe, Recipe, Tag
+from users.serializers import UserReadSerializer
 
 
 User = get_user_model()
@@ -47,7 +47,7 @@ class Base64ImageField(serializers.ImageField):
 
 class RecipeReadSerializer(serializers.ModelSerializer):
     tags = TagSerializer(required=False, many=True)
-    author = UserSerializer(read_only=True)
+    author = UserReadSerializer(read_only=True)
     ingredients = IngredientAmountSerializer(read_only=True, many=True)
     is_favorited = serializers.SerializerMethodField()
     is_in_shopping_cart = serializers.SerializerMethodField()
@@ -71,19 +71,14 @@ class RecipeReadSerializer(serializers.ModelSerializer):
     def get_is_favorited(self, obj):
         user = self.context['request'].user
         if user.is_authenticated:
-            return user.favorites.filter(pk=obj.id).exists()
+            return obj.favorites.filter(user=user).exists()
         return False
 
     def get_is_in_shopping_cart(self, obj):
         user = self.context['request'].user
         if user.is_authenticated:
-            return user.shopping.filter(pk=obj.id).exists()
+            return obj.shopping.filter(user=user).exists()
         return False
-
-    def get_image_url(self, obj):
-        if obj.image:
-            return obj.image.url
-        return None
 
 
 class IngredientRecipeSerializer(serializers.ModelSerializer):
