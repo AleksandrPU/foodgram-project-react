@@ -1,8 +1,11 @@
-from django.conf import settings
 from django.contrib.auth.models import AbstractUser
 from django.db import models
 
-from users.constants import EMAIL_MAX_LENGTH, FIELD_MAX_LENGTH
+from foodgram_backend.constants import (
+    EMAIL_MAX_LENGTH,
+    STR_LENGTH_LIMIT,
+    USERS_FIELD_MAX_LENGTH,
+)
 from users.validators import validate_username
 
 
@@ -16,7 +19,7 @@ class User(AbstractUser):
 
     username = models.CharField(
         'Пользователь',
-        max_length=FIELD_MAX_LENGTH,
+        max_length=USERS_FIELD_MAX_LENGTH,
         unique=True,
         validators=[validate_username]
     )
@@ -25,14 +28,14 @@ class User(AbstractUser):
         max_length=EMAIL_MAX_LENGTH,
         unique=True, blank=False
     )
-    password = models.CharField('Пароль', max_length=FIELD_MAX_LENGTH)
-    first_name = models.CharField('Имя', max_length=FIELD_MAX_LENGTH)
-    last_name = models.CharField('Фамилия', max_length=FIELD_MAX_LENGTH)
+    password = models.CharField('Пароль', max_length=USERS_FIELD_MAX_LENGTH)
+    first_name = models.CharField('Имя', max_length=USERS_FIELD_MAX_LENGTH)
+    last_name = models.CharField('Фамилия', max_length=USERS_FIELD_MAX_LENGTH)
     role = models.CharField(
         'Роль пользователя',
         choices=ROLES,
         default=USER,
-        max_length=FIELD_MAX_LENGTH
+        max_length=USERS_FIELD_MAX_LENGTH
     )
 
     USERNAME_FIELD = 'email'
@@ -44,7 +47,7 @@ class User(AbstractUser):
         ordering = ('username',)
 
     def __str__(self):
-        return self.username[:settings.STRING_LENGTH_LIMIT]
+        return self.username[:STR_LENGTH_LIMIT]
 
 
 class Subscription(models.Model):
@@ -76,6 +79,6 @@ class Subscription(models.Model):
         ]
 
     def __str__(self):
-        return (f'{self.user.username[:settings.STRING_LENGTH_LIMIT]} '
+        return (f'{self.user.username[:STR_LENGTH_LIMIT]} '
                 'подписан на '
-                f'{self.following.username[:settings.STRING_LENGTH_LIMIT]}')
+                f'{self.following.username[:STR_LENGTH_LIMIT]}')

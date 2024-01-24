@@ -2,12 +2,12 @@ from django.contrib.auth import get_user_model
 from django.core.validators import MinValueValidator
 from django.db import models
 
-from recipes.constants import (
+from foodgram_backend.constants import (
     COLOR_MAX_LENGTH,
     TAG_MAX_LENGTH,
     INGREDIENT_MAX_LENGTH,
     UNIT_MAX_LENGTH,
-    STRING_LENGTH_LIMIT,
+    STR_LENGTH_LIMIT,
     RECIPE_MAX_LENGTH,
     VALIDATOR_MIN_VALUE,
 )
@@ -27,7 +27,7 @@ class Tag(models.Model):
         ordering = ('name',)
 
     def __str__(self):
-        return self.name[:STRING_LENGTH_LIMIT]
+        return self.name[:STR_LENGTH_LIMIT]
 
 
 class Ingredient(models.Model):
@@ -41,7 +41,7 @@ class Ingredient(models.Model):
         ordering = ('name',)
 
     def __str__(self):
-        return (f'{self.name[:STRING_LENGTH_LIMIT]}, '
+        return (f'{self.name[:STR_LENGTH_LIMIT]}, '
                 f'{self.measurement_unit}')
 
 
@@ -51,7 +51,6 @@ class Recipe(models.Model):
     name = models.CharField('Название', max_length=RECIPE_MAX_LENGTH)
     image = models.ImageField('Изображение', upload_to='recipe/images/')
     text = models.TextField('Описание')
-    # ingredients = models.ManyToManyField(Ingredient, through='IngredientRecipe', verbose_name='Ингредиенты')
     tags = models.ManyToManyField(Tag, verbose_name='Теги')
     cooking_time = models.PositiveSmallIntegerField(
         'Время приготовления',
@@ -67,8 +66,8 @@ class Recipe(models.Model):
         default_related_name = 'recipes'
 
     def __str__(self):
-        return (f'{self.name[:STRING_LENGTH_LIMIT]}'
-                f' от {self.author.username[:STRING_LENGTH_LIMIT]}')
+        return (f'{self.name[:STR_LENGTH_LIMIT]}'
+                f' от {self.author.username[:STR_LENGTH_LIMIT]}')
 
 
 class IngredientRecipe(models.Model):
@@ -111,8 +110,8 @@ class Favorite(models.Model):
             fields=('user', 'recipe'), name='unique_user_item')]
 
     def __str__(self):
-        return (f'{self.user.username[:STRING_LENGTH_LIMIT]} '
-                f'{self.recipe.name[:STRING_LENGTH_LIMIT]}')
+        return (f'{self.user.username[:STR_LENGTH_LIMIT]} '
+                f'{self.recipe.name[:STR_LENGTH_LIMIT]}')
 
 
 class ShoppingCart(models.Model):
@@ -127,5 +126,5 @@ class ShoppingCart(models.Model):
         default_related_name = 'shopping'
 
     def __str__(self):
-        return (f'{self.user.username[:STRING_LENGTH_LIMIT]} '
-                f'{self.recipe.name[:STRING_LENGTH_LIMIT]}')
+        return (f'{self.user.username[:STR_LENGTH_LIMIT]} '
+                f'{self.recipe.name[:STR_LENGTH_LIMIT]}')
