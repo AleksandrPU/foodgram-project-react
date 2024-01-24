@@ -40,6 +40,11 @@ class RecipeViewSet(viewsets.ModelViewSet):
     def perform_create(self, serializer):
         return serializer.save(author=self.request.user)
 
+    def get_image_url(self, obj):
+        if obj.image:
+            return obj.image.url
+        return None
+
     # todo maybe decorator
     @action(detail=True, methods=['post', 'delete'])
     def favorite(self, request, pk=None):
@@ -66,7 +71,7 @@ class RecipeViewSet(viewsets.ModelViewSet):
             return Response({
                 'id': recipe.id,
                 'name': recipe.name,
-                'image': recipe.image,
+                'image': self.get_image_url(recipe),
                 'cooking_time': recipe.cooking_time,
             },
                 status=status.HTTP_201_CREATED)
@@ -113,7 +118,7 @@ class RecipeViewSet(viewsets.ModelViewSet):
             return Response({
                 'id': recipe.id,
                 'name': recipe.name,
-                'image': recipe.image,
+                'image': self.get_image_url(recipe),
                 'cooking_time': recipe.cooking_time,
             },
                 status=status.HTTP_201_CREATED)
