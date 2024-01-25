@@ -1,4 +1,10 @@
+import csv
+from io import StringIO
+from pprint import pprint
+
 from django.contrib.auth import get_user_model
+from django.db.models import F, Sum
+from django.http import HttpResponse
 from rest_framework import status, viewsets
 from rest_framework.decorators import action
 from rest_framework.permissions import IsAuthenticated
@@ -100,16 +106,39 @@ class RecipeViewSet(viewsets.ModelViewSet):
             permission_classes=(IsAuthenticated,)
             )
     def favorite(self, request, pk=None):
-        return self.add_delete_favorite_shopping_cart(request, Favorite, pk=None)
+        return self.add_delete_favorite_shopping_cart(
+            request, Favorite, pk=None)
 
-    @action(detail=True, methods=['post', 'delete'])
+    @action(detail=True,
+            methods=['post', 'delete'],
+            permission_classes=(IsAuthenticated,)
+            )
     def shopping_cart(self, request, pk=None):
-        return self.add_delete_favorite_shopping_cart(request, ShoppingCart, pk=None)
+        return self.add_delete_favorite_shopping_cart(
+            request, ShoppingCart, pk=None)
 
-    # todo
-    @action(detail=False, methods=['get'])
+    @action(
+        detail=False,
+        methods=['get'],
+        permission_classes=(IsAuthenticated,)
+    )
     def download_shopping_cart(self, request):
-        pass
+        header = ('Ингредиент', 'Единица измерения', 'Количество')
+        query = (Ingredient.objects
+                 .filter(recipes__recipe__shopping__user=request.user)
+                 .annotate(amount=F('recipes__amount'))
+                 .annotate(amount=Sum('amount'))
+                 .order_by('name'))
+        with StringIO() as file:
+            csv.writer(file).writerow(header)
+            csv.writer(file).writerows(
+                query.values_list('name', 'measurement_unit', 'amount'))
+
+            return HttpResponse(file.getvalue(), headers={
+                'Content-Type': 'text/csv',
+                'Content-Disposition':
+                    'attachment; filename="shopping_cart.csv"',
+            })
 
 
 class IngredientViewSet(viewsets.ReadOnlyModelViewSet):
