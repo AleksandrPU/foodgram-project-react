@@ -1,6 +1,7 @@
 from django.contrib.auth import get_user_model
 from rest_framework import status, viewsets
 from rest_framework.decorators import action
+from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 
 from recipes.filters import IngredientFilterSet, RecipeFilterSet
@@ -45,24 +46,25 @@ class RecipeViewSet(viewsets.ModelViewSet):
             return obj.image.url
         return None
 
-    # todo maybe decorator
-    @action(detail=True, methods=['post', 'delete'])
-    def favorite(self, request, pk=None):
-        ERROR_MESSAGE_ADD = 'Ошибка добавления в избранное:'
-        ERROR_MESSAGE_DELETE = 'Ошибка удаления из избранного:'
+    def add_delete_favorite_shopping_cart(self, request, model, pk=None):
+        ERROR_MESSAGE_ADD = (
+            f'Ошибка добавления в {Favorite._meta.verbose_name}:')
+        ERROR_MESSAGE_DELETE = (
+            f'Ошибка удаления из {Favorite._meta.verbose_name}:')
 
         recipe = self.get_object()
         user = request.user
 
         if request.method == 'POST':
-            if Favorite.objects.get(user=user, recipe=recipe):
+            if model.objects.filter(user=user, recipe=recipe).exists():
                 return Response(
                     {'errors': f'{ERROR_MESSAGE_ADD} '
-                               'Рецепт уже есть в избранном.'},
+                               'Рецепт уже есть в '
+                               f'{Favorite._meta.verbose_name}.'},
                     status=status.HTTP_400_BAD_REQUEST
                 )
             try:
-                Favorite.objects.create(user=user, recipe=recipe)
+                model.objects.create(user=user, recipe=recipe)
             except Exception as error:
                 return Response(
                     {'errors': f'{ERROR_MESSAGE_ADD} {error}'},
@@ -77,7 +79,7 @@ class RecipeViewSet(viewsets.ModelViewSet):
                 status=status.HTTP_201_CREATED)
 
         elif request.method == 'DELETE':
-            if obj := Favorite.objects.get(user=user, recipe=recipe):
+            if obj := model.objects.filter(user=user, recipe=recipe):
                 try:
                     obj.delete()
                 except Exception as error:
@@ -88,56 +90,21 @@ class RecipeViewSet(viewsets.ModelViewSet):
                 else:
                     return Response(status=status.HTTP_204_NO_CONTENT)
             return Response(
-                {'errors': f'{ERROR_MESSAGE_DELETE} Рецепта нет в избранном.'},
+                {'errors': f'{ERROR_MESSAGE_DELETE} Рецепта нет в '
+                           f'{Favorite._meta.verbose_name}.'},
                 status=status.HTTP_400_BAD_REQUEST
             )
 
-    # todo maybe decorator
+    @action(detail=True,
+            methods=['post', 'delete'],
+            permission_classes=(IsAuthenticated,)
+            )
+    def favorite(self, request, pk=None):
+        return self.add_delete_favorite_shopping_cart(request, Favorite, pk=None)
+
     @action(detail=True, methods=['post', 'delete'])
     def shopping_cart(self, request, pk=None):
-        ERROR_MESSAGE_ADD = 'Ошибка добавления в список покупок:'
-        ERROR_MESSAGE_DELETE = 'Ошибка удаления из списка покупок:'
-
-        recipe = self.get_object()
-        user = request.user
-
-        if request.method == 'POST':
-            if ShoppingCart.objects.get(user=user, recipe=recipe):
-                return Response(
-                    {'errors': f'{ERROR_MESSAGE_ADD} '
-                               'Рецепт уже есть в списке покупок.'},
-                    status=status.HTTP_400_BAD_REQUEST
-                )
-            try:
-                ShoppingCart.objects.create(user=user, recipe=recipe)
-            except Exception as error:
-                return Response(
-                    {'errors': f'{ERROR_MESSAGE_ADD} {error}'},
-                    status=status.HTTP_400_BAD_REQUEST
-                )
-            return Response({
-                'id': recipe.id,
-                'name': recipe.name,
-                'image': self.get_image_url(recipe),
-                'cooking_time': recipe.cooking_time,
-            },
-                status=status.HTTP_201_CREATED)
-
-        elif request.method == 'DELETE':
-            if obj := ShoppingCart.objects.get(user=user, recipe=recipe):
-                try:
-                    obj.delete()
-                except Exception as error:
-                    return Response(
-                        {'errors': f'{ERROR_MESSAGE_DELETE} {error}'},
-                        status=status.HTTP_400_BAD_REQUEST
-                    )
-                else:
-                    return Response(status=status.HTTP_204_NO_CONTENT)
-            return Response(
-                {'errors': f'{ERROR_MESSAGE_DELETE} Рецепта нет в избранном.'},
-                status=status.HTTP_400_BAD_REQUEST
-            )
+        return self.add_delete_favorite_shopping_cart(request, ShoppingCart, pk=None)
 
     # todo
     @action(detail=False, methods=['get'])
