@@ -1,9 +1,8 @@
 import csv
 from io import StringIO
-from pprint import pprint
 
 from django.contrib.auth import get_user_model
-from django.db.models import F, Sum
+from django.db.models import Exists, F, OuterRef, Sum
 from django.http import HttpResponse
 from rest_framework import status, viewsets
 from rest_framework.decorators import action
@@ -38,6 +37,18 @@ class RecipeViewSet(viewsets.ModelViewSet):
     http_method_names = ('get', 'post', 'patch', 'delete')
     permission_classes = (IsAuthorOrReadOnly,)
     pagination_class = CustomPageNumberPagination
+
+    def get_queryset(self):
+        user = self.request.user
+        if user.is_authenticated:
+            return (Recipe.objects
+                    .annotate(is_favorited=Exists(
+                        Favorite.objects
+                        .filter(recipe=OuterRef('pk'), user=user)))
+                    .annotate(is_in_shopping_cart=Exists(
+                        ShoppingCart.objects
+                        .filter(recipe=OuterRef('pk'), user=user)))
+                    )
 
     def get_serializer_class(self):
         if self.action in ('create', 'partial_update'):
