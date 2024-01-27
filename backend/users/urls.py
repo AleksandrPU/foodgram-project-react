@@ -1,19 +1,23 @@
-import djoser.views
 from django.urls import include, path
 from rest_framework.routers import DefaultRouter
 
-# from users.views import UserViewSet, DjoserUserViewSet
-from users.views import UserViewSet
+from users.views import (
+    CustomUserViewSet,
+    SubscriptionsViewSet,
+    SubscribeViewSet
+)
 
 
-# router = DefaultRouter()
-# router.register('', UserViewSet, basename='users')
 users = DefaultRouter()
-users.register("users", UserViewSet, basename='users')
-
+users.register('users', CustomUserViewSet, basename='users')
 
 urlpatterns = [
-    # path('', include('djoser.urls')),
+    path('auth/', include('djoser.urls.authtoken')),
+    path('users/subscriptions/',
+         SubscriptionsViewSet.as_view({'get': 'list'}),
+         name='subscriptions'),
+    path(r'users/<int:user_id>/subscribe/',
+         SubscribeViewSet.as_view({'post': 'create', 'delete': 'destroy'}),
+         name='subscribe'),
     path('', include(users.urls)),
-    path('', include('djoser.urls.authtoken')),
 ]
