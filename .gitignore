@@ -134,6 +134,7 @@ dmypy.json
 
 # backup
 backup/
+*.bak
 
 # media
 media/
