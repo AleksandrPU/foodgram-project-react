@@ -16,7 +16,6 @@ class IngredientAdmin(admin.ModelAdmin):
     list_filter = ('name',)
 
 
-# todo
 class IngredientsInline(admin.TabularInline):
     model = IngredientRecipe
     extra = 1

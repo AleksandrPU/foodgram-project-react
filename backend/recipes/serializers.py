@@ -116,6 +116,9 @@ class RecipeCreateSerializer(serializers.ModelSerializer):
         if 'tags' in validated_data:
             tags = validated_data.pop('tags')
             instance.tags.set(tags)
+        else:
+            raise serializers.ValidationError(
+                {'errors': 'Теги не указаны.'})
         if 'ingredients' in validated_data:
             for ingredient in instance.ingredients.all():
                 ingredient.delete()
@@ -126,9 +129,31 @@ class RecipeCreateSerializer(serializers.ModelSerializer):
                     ingredient=ingredient['id'],
                     amount=ingredient['amount']
                 )
+        else:
+            raise serializers.ValidationError(
+                {'errors': 'Ингредиенты не указаны.'})
         instance.save()
         return instance
 
     def to_representation(self, instance):
         return RecipeReadSerializer(
             context=self.context).to_representation(instance)
+
+    def validate_ingredients(self, value):
+        if not value:
+            raise serializers.ValidationError(
+                {'errors': 'Ингредиенты не указаны.'})
+        ids = [item['id'] for item in value]
+        if list(set(ids)) != ids:
+            raise serializers.ValidationError(
+                {'errors': 'Рецепт содержит повторяющиеся ингредиенты.'})
+        return value
+
+    def validate_tags(self, value):
+        if not value:
+            raise serializers.ValidationError(
+                {'errors': 'Теги не указаны.'})
+        if list(set(value)) != value:
+            raise serializers.ValidationError(
+                {'errors': 'Рецепт содержит повторяющиеся теги.'})
+        return value
