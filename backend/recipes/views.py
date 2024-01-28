@@ -3,7 +3,7 @@ from io import StringIO
 
 from django.contrib.auth import get_user_model
 from django.db.models import Exists, F, OuterRef, Sum
-from django.http import HttpResponse
+from django.http import Http404, HttpResponse
 from rest_framework import status, viewsets
 from rest_framework.decorators import action
 from rest_framework.permissions import IsAuthenticated
@@ -11,7 +11,6 @@ from rest_framework.response import Response
 
 from recipes.filters import IngredientFilterSet, RecipeFilterSet
 from recipes.models import Favorite, Ingredient, Recipe, ShoppingCart, Tag
-from recipes.paginations import CustomPageNumberPagination
 from recipes.permissions import IsAuthorOrReadOnly
 from recipes.serializers import (
     IngredientSerializer,
@@ -34,7 +33,6 @@ class RecipeViewSet(viewsets.ModelViewSet):
     filterset_class = RecipeFilterSet
     http_method_names = ('get', 'post', 'patch', 'delete')
     permission_classes = (IsAuthorOrReadOnly,)
-    pagination_class = CustomPageNumberPagination
 
     def get_queryset(self):
         user = self.request.user
@@ -67,10 +65,17 @@ class RecipeViewSet(viewsets.ModelViewSet):
         ERROR_MESSAGE_DELETE = (
             f'Ошибка удаления из {Favorite._meta.verbose_name}:')
 
-        recipe = self.get_object()
         user = request.user
 
         if request.method == 'POST':
+            try:
+                recipe = self.get_object()
+            except Http404:
+                return Response(
+                    {'errors': f'{ERROR_MESSAGE_ADD} '
+                               'Рецепта не существует.'},
+                    status=status.HTTP_400_BAD_REQUEST
+                )
             if model.objects.filter(user=user, recipe=recipe).exists():
                 return Response(
                     {'errors': f'{ERROR_MESSAGE_ADD} '
@@ -94,6 +99,7 @@ class RecipeViewSet(viewsets.ModelViewSet):
                 status=status.HTTP_201_CREATED)
 
         elif request.method == 'DELETE':
+            recipe = self.get_object()
             if obj := model.objects.filter(user=user, recipe=recipe):
                 try:
                     obj.delete()

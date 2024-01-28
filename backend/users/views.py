@@ -8,7 +8,6 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 
 from users.models import Subscription
-from users.paginations import CustomPageNumberPagination
 from users.serializers import UserRecipesSerializer
 
 
@@ -16,7 +15,6 @@ User = get_user_model()
 
 
 class CustomUserViewSet(UserViewSet):
-    pagination_class = CustomPageNumberPagination
     http_method_names = ('get', 'post')
 
     def get_queryset(self):
@@ -116,7 +114,6 @@ class SubscribeViewSet(viewsets.ViewSet):
 class SubscriptionsViewSet(viewsets.ModelViewSet):
     serializer_class = UserRecipesSerializer
     permission_classes = (IsAuthenticated,)
-    pagination_class = CustomPageNumberPagination
 
     def get_queryset(self):
         user = self.request.user
