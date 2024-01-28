@@ -1,6 +1,7 @@
 from django.contrib.auth import get_user_model
 from rest_framework import serializers
 
+from foodgram_backend.constants import RECIPES_MAX_COUNT
 from recipes.models import Recipe
 
 
@@ -22,37 +23,6 @@ class UserReadSerializer(serializers.ModelSerializer):
         model = User
 
 
-# todo
-class UserAfterCreateSerializer(serializers.ModelSerializer):
-
-    class Meta:
-        model = User
-        fields = (
-            'email',
-            'id',
-            'username',
-            'first_name',
-            'last_name',
-        )
-
-
-class UserRegistrationSerializer(serializers.ModelSerializer):
-
-    class Meta:
-        model = User
-        fields = (
-            'email',
-            'username',
-            'first_name',
-            'last_name',
-            'password'
-        )
-
-    def to_representation(self, instance):
-        return UserAfterCreateSerializer(
-            context=self.context).to_representation(instance)
-
-
 class RecipeSerializer(serializers.ModelSerializer):
 
     class Meta:
@@ -61,9 +31,9 @@ class RecipeSerializer(serializers.ModelSerializer):
 
 
 class UserRecipesSerializer(serializers.ModelSerializer):
-    is_subscribed = serializers.BooleanField(read_only=True, default=False)
-    recipes_count = serializers.IntegerField(read_only=True, default=0)
-    recipes = RecipeSerializer(many=True)
+    is_subscribed = serializers.BooleanField(read_only=True, default=True)
+    recipes_count = serializers.SerializerMethodField(default=0)
+    recipes = serializers.SerializerMethodField()
 
     class Meta:
         model = User
@@ -77,3 +47,13 @@ class UserRecipesSerializer(serializers.ModelSerializer):
             'recipes',
             'recipes_count'
         )
+
+    def get_recipes(self, obj):
+        if limit := self.context["request"].query_params.get('recipes_limit'):
+            recipes = Recipe.objects.filter(author=obj)[:int(limit)]
+        else:
+            recipes = Recipe.objects.filter(author=obj)[:RECIPES_MAX_COUNT]
+        return RecipeSerializer(recipes, many=True).data
+
+    def get_recipes_count(self, obj):
+        return Recipe.objects.filter(author=obj).count()

@@ -87,7 +87,7 @@ class SubscribeViewSet(viewsets.ViewSet):
                 {'errors': f'{ERROR_MESSAGE} {error}'},
                 status=status.HTTP_400_BAD_REQUEST
             )
-        return Response(UserRecipesSerializer(following).data,
+        return Response(UserRecipesSerializer(following, context={'request': request}).data,
                         status=status.HTTP_201_CREATED)
 
     def destroy(self, request, user_id=None):
