@@ -1,12 +1,6 @@
 import os.path
 from pathlib import Path
 
-# todo
-from dotenv import load_dotenv
-
-# todo
-load_dotenv()
-
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -69,14 +63,12 @@ WSGI_APPLICATION = 'foodgram_backend.wsgi.application'
 # todo
 DATABASES = {
     'default': {
-        # 'ENGINE': 'django.db.backends.postgresql',
-        # 'NAME': os.getenv('POSTGRES_DB', 'django'),
-        # 'USER': os.getenv('POSTGRES_USER', 'django'),
-        # 'PASSWORD': os.getenv('POSTGRES_PASSWORD', ''),
-        # 'HOST': os.getenv('DB_HOST', ''),
-        # 'PORT': os.getenv('DB_PORT', 5432)
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': os.getenv('POSTGRES_DB', 'django'),
+        'USER': os.getenv('POSTGRES_USER', 'django'),
+        'PASSWORD': os.getenv('POSTGRES_PASSWORD', ''),
+        'HOST': os.getenv('DB_HOST', ''),
+        'PORT': os.getenv('DB_PORT', 5432)
     }
 }
 
@@ -115,11 +107,9 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 AUTH_USER_MODEL = 'users.User'
 
-# todo
 REST_FRAMEWORK = {
-#     'DEFAULT_PAGINATION_CLASSES':
-#         'rest_framework.pagination.LimitOffsetPagination',
-#     'PAGE_SIZE': 10,
+    'DEFAULT_PAGINATION_CLASSES':
+        'foodgram_backend.paginations.CustomPageNumberPagination',
     'DEFAULT_PERMISSION_CLASSES': (
         'rest_framework.permissions.AllowAny',
     ),
@@ -132,12 +122,11 @@ REST_FRAMEWORK = {
     'DEFAULT_SCHEMA_CLASS': 'drf_spectacular.openapi.AutoSchema',
 }
 
-# todo
 DJOSER = {
     'SERIALIZERS': {
         'user': 'users.serializers.UserReadSerializer',
         'current_user': 'users.serializers.UserReadSerializer',
-},
+    },
     'PERMISSIONS': {
         'user': ['rest_framework.permissions.AllowAny'],
         'user_list': ['rest_framework.permissions.AllowAny'],
