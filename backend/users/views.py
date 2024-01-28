@@ -29,9 +29,10 @@ class CustomUserViewSet(UserViewSet):
             )
         return queryset
 
-    @action(['get'], detail=False)
+    @action(['get'], detail=False, permission_classes=(IsAuthenticated,))
     def me(self, request, *args, **kwargs):
         super().me(request, *args, **kwargs)
+        return self.retrieve(request, *args, **kwargs)
 
     def activation(self, request, *args, **kwargs):
         pass
