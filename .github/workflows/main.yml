@@ -112,7 +112,7 @@ jobs:
       - name: Checkout repo
         uses: actions/checkout@v3
 
-      - name: Copy docker-compose.yml via ssh
+      - name: Copy docker-compose.yaml via ssh
         uses: appleboy/scp-action@master
         with:
           host: ${{ secrets.HOST }}
@@ -131,12 +131,12 @@ jobs:
           passphrase: ${{ secrets.SSH_PASSPHRASE }}
           script: |
             cd foodgram
-            sudo docker compose -f docker-compose.production.yml pull
-            sudo docker compose -f docker-compose.production.yml down
-            sudo docker compose -f docker-compose.production.yml up -d
-            sudo docker compose -f docker-compose.production.yml exec backend python manage.py migrate
-            sudo docker compose -f docker-compose.production.yml exec backend python manage.py collectstatic
-            sudo docker compose -f docker-compose.production.yml exec backend cp -r /app/collected_static/. /backend_static/static/
+            sudo docker compose -f docker-compose.production.yaml pull
+            sudo docker compose -f docker-compose.production.yaml down
+            sudo docker compose -f docker-compose.production.yaml up -d
+            sudo docker compose -f docker-compose.production.yaml exec backend python manage.py migrate
+            sudo docker compose -f docker-compose.production.yaml exec backend python manage.py collectstatic
+            sudo docker compose -f docker-compose.production.yaml exec backend cp -r /app/collected_static/. /backend_static/static/
 
   send_message:
     name: Send message in Telegram
