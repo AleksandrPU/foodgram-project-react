@@ -31,8 +31,6 @@ class TagViewSet(viewsets.ReadOnlyModelViewSet):
 
 class RecipeViewSet(viewsets.ModelViewSet):
     queryset = Recipe.objects.all()
-    # todo
-    # pagination_class = LimitOffsetPagination
     filterset_class = RecipeFilterSet
     http_method_names = ('get', 'post', 'patch', 'delete')
     permission_classes = (IsAuthorOrReadOnly,)
@@ -60,7 +58,7 @@ class RecipeViewSet(viewsets.ModelViewSet):
 
     def get_image_url(self, obj):
         if obj.image:
-            return obj.image.url
+            return self.request.build_absolute_uri(obj.image.url)
         return None
 
     def add_delete_favorite_shopping_cart(self, request, model, pk=None):
