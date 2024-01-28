@@ -26,6 +26,11 @@ class RecipeAdmin(admin.ModelAdmin):
     list_display = ('name', 'author')
     list_filter = ('author', 'name', 'tags')
     inlines = (IngredientsInline,)
+    readonly_fields = ('recipes_count',)
+
+    @admin.display(description='Рецепт в избранном')
+    def recipes_count(self, instance):
+        return instance.favorites.all().count()
 
 
 @admin.register(Tag)
