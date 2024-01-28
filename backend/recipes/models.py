@@ -4,14 +4,13 @@ from django.db import models
 
 from foodgram_backend.constants import (
     COLOR_MAX_LENGTH,
-    TAG_MAX_LENGTH,
     INGREDIENT_MAX_LENGTH,
-    UNIT_MAX_LENGTH,
-    STR_LENGTH_LIMIT,
     RECIPE_MAX_LENGTH,
-    VALIDATOR_MIN_VALUE,
+    STR_LENGTH_LIMIT,
+    TAG_MAX_LENGTH,
+    UNIT_MAX_LENGTH,
+    VALIDATOR_MIN_VALUE
 )
-
 
 User = get_user_model()
 

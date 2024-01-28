@@ -7,7 +7,6 @@ from rest_framework import serializers
 from recipes.models import Ingredient, IngredientRecipe, Recipe, Tag
 from users.serializers import UserReadSerializer
 
-
 User = get_user_model()
 
 
@@ -50,7 +49,8 @@ class RecipeReadSerializer(serializers.ModelSerializer):
     author = UserReadSerializer(read_only=True)
     ingredients = IngredientAmountSerializer(read_only=True, many=True)
     is_favorited = serializers.BooleanField(read_only=True, default=False)
-    is_in_shopping_cart = serializers.BooleanField(read_only=True, default=False)
+    is_in_shopping_cart = serializers.BooleanField(
+        read_only=True, default=False)
     image = Base64ImageField()
 
     class Meta:

@@ -3,10 +3,9 @@ from rest_framework.routers import DefaultRouter
 
 from users.views import (
     CustomUserViewSet,
-    SubscriptionsViewSet,
-    SubscribeViewSet
+    SubscribeViewSet,
+    SubscriptionsViewSet
 )
-
 
 users = DefaultRouter()
 users.register('users', CustomUserViewSet, basename='users')

@@ -19,7 +19,6 @@ from recipes.serializers import (
     TagSerializer
 )
 
-
 User = get_user_model()
 
 

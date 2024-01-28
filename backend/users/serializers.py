@@ -4,7 +4,6 @@ from rest_framework import serializers
 from foodgram_backend.constants import RECIPES_MAX_COUNT
 from recipes.models import Recipe
 
-
 User = get_user_model()
 
 

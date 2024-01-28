@@ -10,7 +10,6 @@ from rest_framework.response import Response
 from users.models import Subscription
 from users.serializers import UserRecipesSerializer
 
-
 User = get_user_model()
 
 
@@ -85,8 +84,10 @@ class SubscribeViewSet(viewsets.ViewSet):
                 {'errors': f'{ERROR_MESSAGE} {error}'},
                 status=status.HTTP_400_BAD_REQUEST
             )
-        return Response(UserRecipesSerializer(following, context={'request': request}).data,
-                        status=status.HTTP_201_CREATED)
+        return Response(UserRecipesSerializer(
+            following,
+            context={'request': request}).data,
+            status=status.HTTP_201_CREATED)
 
     def destroy(self, request, user_id=None):
         ERROR_MESSAGE = 'Ошибка отписки:'
