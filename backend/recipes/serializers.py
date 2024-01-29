@@ -144,7 +144,7 @@ class RecipeCreateSerializer(serializers.ModelSerializer):
             raise serializers.ValidationError(
                 {'errors': 'Ингредиенты не указаны.'})
         ids = [item['id'] for item in value]
-        if list(set(ids)) != ids:
+        if len(set(ids)) != len(ids):
             raise serializers.ValidationError(
                 {'errors': 'Рецепт содержит повторяющиеся ингредиенты.'})
         return value
@@ -153,7 +153,7 @@ class RecipeCreateSerializer(serializers.ModelSerializer):
         if not value:
             raise serializers.ValidationError(
                 {'errors': 'Теги не указаны.'})
-        if list(set(value)) != value:
+        if len(set(value)) != len(value):
             raise serializers.ValidationError(
                 {'errors': 'Рецепт содержит повторяющиеся теги.'})
         return value
