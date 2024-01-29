@@ -18,7 +18,7 @@ services:
     depends_on:
       - db
     volumes:
-      - static:/backend_static/
+      - static:/app/static/
       - media:/app/media/
 
   frontend:
@@ -29,7 +29,7 @@ services:
   nginx:
     image: nginx:1.19.3
     ports:
-      - "8080:80"
+      - 8080:80
     depends_on:
       - backend
       - frontend

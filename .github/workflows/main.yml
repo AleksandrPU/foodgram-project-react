@@ -87,24 +87,14 @@ jobs:
       - name: Checkout repo
         uses: actions/checkout@v3
 
-      - name: Copy infra via ssh
+      - name: Copy infra and docs via ssh
         uses: appleboy/scp-action@master
         with:
           host: ${{ secrets.HOST }}
           username: ${{ secrets.USER }}
           key: ${{ secrets.SSH_KEY }}
           passphrase: ${{ secrets.SSH_PASSPHRASE }}
-          source: "infra"
-          target: "foodgram"
-
-      - name: Copy docs via ssh
-        uses: appleboy/scp-action@master
-        with:
-          host: ${{ secrets.HOST }}
-          username: ${{ secrets.USER }}
-          key: ${{ secrets.SSH_KEY }}
-          passphrase: ${{ secrets.SSH_PASSPHRASE }}
-          source: "docs"
+          source: "infra,docs"
           target: "foodgram"
 
       - name: Executing remote ssh commands to deploy
@@ -121,7 +111,6 @@ jobs:
             sudo docker compose up -d
             sudo docker compose exec backend python manage.py migrate
             sudo docker compose exec backend python manage.py collectstatic
-            sudo docker compose exec backend cp -r /app/collected_static/. /backend_static/static/
 
   send_message:
     name: Send message in Telegram
