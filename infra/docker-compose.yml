@@ -8,13 +8,13 @@ volumes:
 services:
   db:
     image: postgres:13
-    env_file: .env
+    env_file: ../.env
     volumes:
       - pg_data:/var/lib/postgresql/data
 
   backend:
     image: aleksup/foodgram_backend
-    env_file: .env
+    env_file: ../.env
     depends_on:
       - db
     volumes:
