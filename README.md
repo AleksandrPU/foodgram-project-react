@@ -1,5 +1,7 @@
 Сервер: foodgram.shd000.ru
+
 Логин:  admin@example.com
+
 Пароль: iXKc4tYJZgNd2hFmK3HMnbDF9
 
 # Описание:
