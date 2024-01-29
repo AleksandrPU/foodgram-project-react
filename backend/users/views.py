@@ -7,6 +7,7 @@ from rest_framework.decorators import action
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 
+from foodgram_backend.paginations import CustomPageNumberPagination
 from users.models import Subscription
 from users.serializers import UserRecipesSerializer
 
@@ -15,6 +16,7 @@ User = get_user_model()
 
 class CustomUserViewSet(UserViewSet):
     http_method_names = ('get', 'post')
+    pagination_class = CustomPageNumberPagination
 
     def get_queryset(self):
         user = self.request.user
@@ -115,6 +117,7 @@ class SubscribeViewSet(viewsets.ViewSet):
 class SubscriptionsViewSet(viewsets.ModelViewSet):
     serializer_class = UserRecipesSerializer
     permission_classes = (IsAuthenticated,)
+    pagination_class = CustomPageNumberPagination
 
     def get_queryset(self):
         user = self.request.user

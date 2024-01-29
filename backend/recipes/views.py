@@ -9,6 +9,7 @@ from rest_framework.decorators import action
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 
+from foodgram_backend.paginations import CustomPageNumberPagination
 from recipes.filters import IngredientFilterSet, RecipeFilterSet
 from recipes.models import Favorite, Ingredient, Recipe, ShoppingCart, Tag
 from recipes.permissions import IsAuthorOrReadOnly
@@ -32,6 +33,7 @@ class RecipeViewSet(viewsets.ModelViewSet):
     filterset_class = RecipeFilterSet
     http_method_names = ('get', 'post', 'patch', 'delete')
     permission_classes = (IsAuthorOrReadOnly,)
+    pagination_class = CustomPageNumberPagination
 
     def get_queryset(self):
         user = self.request.user
