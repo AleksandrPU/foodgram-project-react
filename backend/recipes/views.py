@@ -84,13 +84,7 @@ class RecipeViewSet(viewsets.ModelViewSet):
                                f'{Favorite._meta.verbose_name}.'},
                     status=status.HTTP_400_BAD_REQUEST
                 )
-            try:
-                model.objects.create(user=user, recipe=recipe)
-            except Exception as error:
-                return Response(
-                    {'errors': f'{ERROR_MESSAGE_ADD} {error}'},
-                    status=status.HTTP_400_BAD_REQUEST
-                )
+            model.objects.create(user=user, recipe=recipe)
             return Response({
                 'id': recipe.id,
                 'name': recipe.name,
@@ -102,15 +96,8 @@ class RecipeViewSet(viewsets.ModelViewSet):
         elif request.method == 'DELETE':
             recipe = self.get_object()
             if obj := model.objects.filter(user=user, recipe=recipe):
-                try:
-                    obj.delete()
-                except Exception as error:
-                    return Response(
-                        {'errors': f'{ERROR_MESSAGE_DELETE} {error}'},
-                        status=status.HTTP_400_BAD_REQUEST
-                    )
-                else:
-                    return Response(status=status.HTTP_204_NO_CONTENT)
+                obj.delete()
+                return Response(status=status.HTTP_204_NO_CONTENT)
             return Response(
                 {'errors': f'{ERROR_MESSAGE_DELETE} Рецепта нет в '
                            f'{Favorite._meta.verbose_name}.'},
