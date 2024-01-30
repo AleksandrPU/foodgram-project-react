@@ -89,6 +89,7 @@ class RecipeCreateSerializer(serializers.ModelSerializer):
         tags = validated_data.pop('tags')
         ingredients = validated_data.pop('ingredients')
         recipe = Recipe.objects.create(**validated_data)
+
         recipe.tags.set(tags)
         bulk_ingredients = [IngredientRecipe(
             recipe=recipe,
@@ -98,37 +99,33 @@ class RecipeCreateSerializer(serializers.ModelSerializer):
         IngredientRecipe.objects.bulk_create(bulk_ingredients)
         return recipe
 
-    def update(self, instance, validated_data):
-        instance.name = validated_data.get('name', instance.name)
-        instance.image = validated_data.get('image', instance.image)
-        instance.text = validated_data.get('text', instance.text)
-        instance.cooking_time = validated_data.get(
-            'cooking_time', instance.cooking_time)
-        if 'tags' in validated_data:
-            tags = validated_data.pop('tags')
-            instance.tags.set(tags)
-        else:
-            raise serializers.ValidationError(
-                {'errors': 'Теги не указаны.'})
-        if 'ingredients' in validated_data:
-            for ingredient in instance.ingredients.all():
-                ingredient.delete()
-            ingredients = validated_data.pop('ingredients')
-            for ingredient in ingredients:
-                IngredientRecipe.objects.create(
-                    recipe=instance,
-                    ingredient=ingredient['id'],
-                    amount=ingredient['amount']
-                )
-        else:
-            raise serializers.ValidationError(
-                {'errors': 'Ингредиенты не указаны.'})
-        instance.save()
-        return instance
+    def update(self, recipe, validated_data):
+        ingredients = validated_data.pop('ingredients')
+        super().update(recipe, validated_data)
+
+        recipe.ingredients.all().delete()
+
+        bulk_ingredients = [IngredientRecipe(
+            recipe=recipe,
+            ingredient=ingredient['id'],
+            amount=ingredient['amount']
+        ) for ingredient in ingredients]
+        IngredientRecipe.objects.bulk_create(bulk_ingredients)
+        recipe.save()
+        return recipe
 
     def to_representation(self, instance):
         return RecipeReadSerializer(
             context=self.context).to_representation(instance)
+
+    def validate(self, data):
+        if 'tags' not in data:
+            raise serializers.ValidationError(
+                {'errors': 'Отсутствует поле с тегами.'})
+        if 'ingredients' not in data:
+            raise serializers.ValidationError(
+                {'errors': 'Отсутствует поле с ингредиентами.'})
+        return data
 
     def validate_ingredients(self, value):
         if not value:
