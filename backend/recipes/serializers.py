@@ -1,3 +1,5 @@
+from pprint import pprint
+
 from django.contrib.auth import get_user_model
 from rest_framework import serializers
 
@@ -88,12 +90,12 @@ class RecipeCreateSerializer(serializers.ModelSerializer):
         ingredients = validated_data.pop('ingredients')
         recipe = Recipe.objects.create(**validated_data)
         recipe.tags.set(tags)
-        for ingredient in ingredients:
-            IngredientRecipe.objects.create(
-                recipe=recipe,
-                ingredient=ingredient['id'],
-                amount=ingredient['amount']
-            )
+        bulk_ingredients = [IngredientRecipe(
+            recipe=recipe,
+            ingredient=ingredient['id'],
+            amount=ingredient['amount']
+        ) for ingredient in ingredients]
+        IngredientRecipe.objects.bulk_create(bulk_ingredients)
         return recipe
 
     def update(self, instance, validated_data):
