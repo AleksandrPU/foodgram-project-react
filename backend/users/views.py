@@ -69,6 +69,7 @@ class SubscribeViewSet(viewsets.ViewSet):
 
     def create(self, request, user_id=None):
         user = request.user
+        get_object_or_404(User, pk=user_id)
 
         serializer = SubscriptionSerializer(
             data={'user': user.id, 'following': user_id},
