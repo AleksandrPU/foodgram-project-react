@@ -3,7 +3,7 @@ from io import StringIO
 
 from django.contrib.auth import get_user_model
 from django.db.models import Exists, F, OuterRef, Sum
-from django.http import Http404, HttpResponse
+from django.http import HttpResponse
 from rest_framework import status, viewsets
 from rest_framework.decorators import action
 from rest_framework.permissions import IsAuthenticated
@@ -14,9 +14,12 @@ from recipes.filters import IngredientFilterSet, RecipeFilterSet
 from recipes.models import Favorite, Ingredient, Recipe, ShoppingCart, Tag
 from recipes.permissions import IsAuthorOrReadOnly
 from recipes.serializers import (
+    FavoriteSerializer,
     IngredientSerializer,
     RecipeCreateSerializer,
     RecipeReadSerializer,
+    RecipeShortSerializer,
+    ShoppingCartSerializer,
     TagSerializer
 )
 
@@ -61,46 +64,34 @@ class RecipeViewSet(viewsets.ModelViewSet):
         return None
 
     def add_delete_favorite_shopping_cart(self, request, model, pk=None):
-        ERROR_MESSAGE_ADD = (
-            f'Ошибка добавления в {Favorite._meta.verbose_name}:')
-        ERROR_MESSAGE_DELETE = (
-            f'Ошибка удаления из {Favorite._meta.verbose_name}:')
-
         user = request.user
 
         if request.method == 'POST':
-            try:
-                recipe = self.get_object()
-            except Http404:
-                return Response(
-                    {'errors': f'{ERROR_MESSAGE_ADD} '
-                               'Рецепта не существует.'},
-                    status=status.HTTP_400_BAD_REQUEST
-                )
-            if model.objects.filter(user=user, recipe=recipe).exists():
-                return Response(
-                    {'errors': f'{ERROR_MESSAGE_ADD} '
-                               'Рецепт уже есть в '
-                               f'{Favorite._meta.verbose_name}.'},
-                    status=status.HTTP_400_BAD_REQUEST
-                )
-            model.objects.create(user=user, recipe=recipe)
-            return Response({
-                'id': recipe.id,
-                'name': recipe.name,
-                'image': self.get_image_url(recipe),
-                'cooking_time': recipe.cooking_time,
-            },
-                status=status.HTTP_201_CREATED)
+            if model is Favorite:
+                model_serializer = FavoriteSerializer
+            else:
+                model_serializer = ShoppingCartSerializer
 
-        elif request.method == 'DELETE':
+            serializer = model_serializer(
+                data={'user': user.id, 'recipe': pk})
+            serializer.is_valid(raise_exception=True)
+            instance = serializer.save()
+            return Response(
+                RecipeShortSerializer(
+                    instance.recipe,
+                    context={'request': request}
+                ).data,
+                status=status.HTTP_201_CREATED
+            )
+
+        else:
             recipe = self.get_object()
             if obj := model.objects.filter(user=user, recipe=recipe):
                 obj.delete()
                 return Response(status=status.HTTP_204_NO_CONTENT)
             return Response(
-                {'errors': f'{ERROR_MESSAGE_DELETE} Рецепта нет в '
-                           f'{Favorite._meta.verbose_name}.'},
+                {'errors': 'Рецепта нет в '
+                           f'{model._meta.verbose_name}.'},
                 status=status.HTTP_400_BAD_REQUEST
             )
 
@@ -110,7 +101,7 @@ class RecipeViewSet(viewsets.ModelViewSet):
             )
     def favorite(self, request, pk=None):
         return self.add_delete_favorite_shopping_cart(
-            request, Favorite, pk=None)
+            request, Favorite, pk)
 
     @action(detail=True,
             methods=['post', 'delete'],
@@ -118,7 +109,7 @@ class RecipeViewSet(viewsets.ModelViewSet):
             )
     def shopping_cart(self, request, pk=None):
         return self.add_delete_favorite_shopping_cart(
-            request, ShoppingCart, pk=None)
+            request, ShoppingCart, pk)
 
     @action(
         detail=False,
@@ -130,12 +121,12 @@ class RecipeViewSet(viewsets.ModelViewSet):
         query = (Ingredient.objects
                  .filter(recipes__recipe__shopping__user=request.user)
                  .annotate(amount=F('recipes__amount'))
-                 .annotate(amount=Sum('amount'))
+                 .annotate(sum_amount=Sum('amount'))
                  .order_by('name'))
         with StringIO() as file:
             csv.writer(file).writerow(header)
             csv.writer(file).writerows(
-                query.values_list('name', 'measurement_unit', 'amount'))
+                query.values_list('name', 'measurement_unit', 'sum_amount'))
 
             return HttpResponse(file.getvalue(), headers={
                 'Content-Type': 'text/csv',
