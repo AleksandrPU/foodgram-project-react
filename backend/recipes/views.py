@@ -29,7 +29,6 @@ class TagViewSet(viewsets.ReadOnlyModelViewSet):
 
 
 class RecipeViewSet(viewsets.ModelViewSet):
-    queryset = Recipe.objects.all()
     filterset_class = RecipeFilterSet
     http_method_names = ('get', 'post', 'patch', 'delete')
     permission_classes = (IsAuthorOrReadOnly,)
@@ -46,6 +45,7 @@ class RecipeViewSet(viewsets.ModelViewSet):
                         ShoppingCart.objects
                         .filter(recipe=OuterRef('pk'), user=user)))
                     )
+        return Recipe.objects.all()
 
     def get_serializer_class(self):
         if self.action in ('create', 'partial_update'):
