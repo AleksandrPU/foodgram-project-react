@@ -3,6 +3,7 @@ from rest_framework import serializers
 
 from foodgram_backend.constants import RECIPES_MAX_COUNT
 from recipes.models import Recipe
+from users.models import Subscription
 
 User = get_user_model()
 
@@ -56,3 +57,23 @@ class UserRecipesSerializer(serializers.ModelSerializer):
 
     def get_recipes_count(self, obj):
         return Recipe.objects.filter(author=obj).count()
+
+
+class SubscriptionSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = Subscription
+        fields = ('user', 'following')
+        validators = [
+            serializers.UniqueTogetherValidator(
+                queryset=Subscription.objects.all(),
+                fields=('user', 'following'),
+                message='Вы уже подписаны.'
+            )
+        ]
+
+    def validate_following(self, value):
+        if value == self.context['request'].user:
+            raise serializers.ValidationError(
+                'Подписаться на самого себя нельзя.')
+        return value
