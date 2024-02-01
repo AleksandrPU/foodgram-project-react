@@ -33,36 +33,6 @@ class CustomUserViewSet(UserViewSet):
         super().me(request, *args, **kwargs)
         return self.retrieve(request, *args, **kwargs)
 
-    def activation(self, request, *args, **kwargs):
-        pass
-
-    def resend_activation(self, request, *args, **kwargs):
-        pass
-
-    def reset_email(self, request, *args, **kwargs):
-        pass
-
-    def reset_email_confirm(self, request, *args, **kwargs):
-        pass
-
-    def reset_password(self, request, *args, **kwargs):
-        pass
-
-    def reset_password_confirm(self, request, *args, **kwargs):
-        pass
-
-    def set_email(self, request, *args, **kwargs):
-        pass
-
-    def set_username(self, request, *args, **kwargs):
-        pass
-
-    def reset_username(self, request, *args, **kwargs):
-        pass
-
-    def reset_username_confirm(self, request, *args, **kwargs):
-        pass
-
 
 class SubscribeViewSet(viewsets.ViewSet):
     permission_classes = (IsAuthenticated,)
