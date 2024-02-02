@@ -39,16 +39,16 @@ class RecipeViewSet(viewsets.ModelViewSet):
 
     def get_queryset(self):
         user = self.request.user
-        if user.is_authenticated:
-            return (Recipe.objects
-                    .annotate(is_favorited=Exists(
-                        Favorite.objects
-                        .filter(recipe=OuterRef('pk'), user=user)))
-                    .annotate(is_in_shopping_cart=Exists(
-                        ShoppingCart.objects
-                        .filter(recipe=OuterRef('pk'), user=user)))
-                    )
-        return Recipe.objects.all()
+        if not user.is_authenticated:
+            return Recipe.objects.all()
+        return (Recipe.objects
+                .annotate(is_favorited=Exists(
+                    Favorite.objects
+                    .filter(recipe=OuterRef('pk'), user=user)))
+                .annotate(is_in_shopping_cart=Exists(
+                    ShoppingCart.objects
+                    .filter(recipe=OuterRef('pk'), user=user)))
+                )
 
     def get_serializer_class(self):
         if self.action in ('create', 'partial_update'):
@@ -58,20 +58,11 @@ class RecipeViewSet(viewsets.ModelViewSet):
     def perform_create(self, serializer):
         return serializer.save(author=self.request.user)
 
-    def get_image_url(self, obj):
-        if obj.image:
-            return self.request.build_absolute_uri(obj.image.url)
-        return None
-
-    def add_delete_favorite_shopping_cart(self, request, model, pk=None):
+    def add_delete_favorite_shopping_cart(
+            self, request, model, model_serializer, pk=None):
         user = request.user
 
         if request.method == 'POST':
-            if model is Favorite:
-                model_serializer = FavoriteSerializer
-            else:
-                model_serializer = ShoppingCartSerializer
-
             serializer = model_serializer(
                 data={'user': user.id, 'recipe': pk})
             serializer.is_valid(raise_exception=True)
@@ -84,16 +75,15 @@ class RecipeViewSet(viewsets.ModelViewSet):
                 status=status.HTTP_201_CREATED
             )
 
-        else:
-            recipe = self.get_object()
-            if obj := model.objects.filter(user=user, recipe=recipe):
-                obj.delete()
-                return Response(status=status.HTTP_204_NO_CONTENT)
-            return Response(
-                {'errors': 'Рецепта нет в '
-                           f'{model._meta.verbose_name}.'},
-                status=status.HTTP_400_BAD_REQUEST
-            )
+        recipe = self.get_object()
+        if obj := model.objects.filter(user=user, recipe=recipe):
+            obj.delete()
+            return Response(status=status.HTTP_204_NO_CONTENT)
+        return Response(
+            {'errors': 'Рецепта нет в '
+                       f'{model._meta.verbose_name}.'},
+            status=status.HTTP_400_BAD_REQUEST
+        )
 
     @action(detail=True,
             methods=['post', 'delete'],
@@ -101,7 +91,7 @@ class RecipeViewSet(viewsets.ModelViewSet):
             )
     def favorite(self, request, pk=None):
         return self.add_delete_favorite_shopping_cart(
-            request, Favorite, pk)
+            request, Favorite, FavoriteSerializer, pk)
 
     @action(detail=True,
             methods=['post', 'delete'],
@@ -109,7 +99,7 @@ class RecipeViewSet(viewsets.ModelViewSet):
             )
     def shopping_cart(self, request, pk=None):
         return self.add_delete_favorite_shopping_cart(
-            request, ShoppingCart, pk)
+            request, ShoppingCart, ShoppingCartSerializer, pk)
 
     @action(
         detail=False,

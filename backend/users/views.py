@@ -21,12 +21,12 @@ class CustomUserViewSet(UserViewSet):
     def get_queryset(self):
         user = self.request.user
         queryset = super().get_queryset()
-        if user.is_authenticated:
-            queryset = queryset.annotate(is_subscribed=Exists(
-                Subscription.objects
-                .filter(following=OuterRef('pk'), user=user))
-            )
-        return queryset
+        if not user.is_authenticated:
+            return queryset
+        return queryset.annotate(is_subscribed=Exists(
+            Subscription.objects
+            .filter(following=OuterRef('pk'), user=user))
+        )
 
     @action(['get'], detail=False, permission_classes=(IsAuthenticated,))
     def me(self, request, *args, **kwargs):
