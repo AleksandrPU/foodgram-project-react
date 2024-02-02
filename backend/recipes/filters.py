@@ -26,21 +26,19 @@ class RecipeFilterSet(filters.FilterSet):
 
     def favorited_filter(self, queryset, name, value):
         user = self.request.user
-        if user.is_authenticated:
-            if value == '1':
-                return queryset.filter(favorites__user=user)
-            else:
-                return queryset.filter(~Q(favorites__user=user))
-        return queryset
+        if not user.is_authenticated:
+            return queryset
+        if value == '1':
+            return queryset.filter(favorites__user=user)
+        return queryset.filter(~Q(favorites__user=user))
 
     def shopping_filter(self, queryset, name, value):
         user = self.request.user
-        if user.is_authenticated:
-            if value == '1':
-                return queryset.filter(shopping__user=user)
-            else:
-                return queryset.filter(~Q(shopping__user=user))
-        return queryset
+        if not user.is_authenticated:
+            return queryset
+        if value == '1':
+            return queryset.filter(shopping__user=user)
+        return queryset.filter(~Q(shopping__user=user))
 
 
 class IngredientFilterSet(filters.FilterSet):
