@@ -4,23 +4,25 @@
 
 Пароль: iXKc4tYJZgNd2hFmK3HMnbDF9
 
-![Push Status](https://github.com/AleksandrPU/foodgram-project-react/actions/workflows/main.yml/badge.svg?event=push)
+# Foodgram Project
 
-# Описание:
+[![Push Status](https://github.com/AleksandrPU/foodgram-project-react/actions/workflows/main.yml/badge.svg?event=push)](https://github.com/AleksandrPU/foodgram-project-react/actions/workflows/main.yml/badge.svg?event=push)
+
+## Описание:
 
 Учебный проект по изучению создания бэкенда для сайта, а также автоматизации разворачивания на сервере сайта с использованием контейнеров.
 
 Сайт предназначен для хранения рецептов блюд с возможностью добавления в избранное и список покупок. Список покупок можно сохранить в csv-файл. Реализована возможность подписки на других пользователей.
 
-# Используемые технологии:
+## Используемые технологии:
 
 Для создания и управления контейнерами используется [Docker](https://www.docker.com/) с расширением [Compose](https://docs.docker.com/compose/)
 
 Для CI/CD применен [GitHub Actions](https://github.com/features/actions).
 
-## Контейнеры
+### Контейнеры
 
-### Backend
+#### Backend
 
 - [Django-3.2](https://www.djangoproject.com/)
 - [Django Rest Framework](https://www.django-rest-framework.org/)
@@ -29,17 +31,17 @@
 
 Для создания токенов и аутентификации пользователей применен [djoser](https://djoser.readthedocs.io/). 
 
-### Frontend
+#### Frontend
 
 - [NodeJS-13](https://nodejs.org)
 
-### Прокси-сервер
+#### Прокси-сервер
 
 - [NGINX](https://nginx.org)
 
-# Запуск проекта:
+## Запуск проекта:
 
-## Подготовка к запуску:
+### Подготовка к запуску:
 
 1. Для запуска проекта необходимо на сервере установить Docker и расширение Docker-Compose.
 
@@ -49,7 +51,7 @@
 
 4. Создать в этой директории файл с настройками .env по примеру файла .env.example
 
-## Запуск:
+### Запуск:
 
 1. Скачать подготовленные контейнеры:
 
@@ -79,21 +81,21 @@ sudo docker compose -f docker-compose.production.yml exec backend cp -r /app/col
 
 После запуска сайт доступен по адресу 127.0.0.1:8000 или localhost:8000
 
-## Остановка проекта:
+### Остановка проекта:
 
 ```bash
 sudo docker compose -f docker-compose.production.yml down
 ```
 
-## Обновление:
+### Обновление:
 
 При необходимости можно обновить запущенные контейнеры повторно выполнив команды из раздела "Запуск".
 
-# Работа с сайтом:
+## Работа с сайтом:
 
 Для использования сайта пользователи должны зарегистрироваться.
 
-## Администрирование:
+### Администрирование:
 
 Создание суперпользователя:
 
@@ -103,9 +105,9 @@ sudo docker compose -f docker-compose.production.yml exec backend python manage.
 
 Управление пользователями возможно в админ зоне сайта 127.0.0.1:8000/admin/
 
-# Примеры запросов к API:
+## Примеры запросов к API:
 
-## Регистрация пользователя:
+### Регистрация пользователя:
 
 ```
 POST /api/users/
@@ -136,7 +138,7 @@ HTTP 201 Created
 }
 ```
 
-## Получить токен:
+### Получить токен:
 
 ```
 POST /api/auth/token/login/
@@ -160,7 +162,7 @@ HTTP 200 OK
 }
 ```
 
-## Получить список пользователей:
+### Получить список пользователей:
 
 ```
 GET /api/users/
@@ -187,7 +189,7 @@ HTTP 200 OK
 }
 ```
 
-## Получить список рецептов:
+### Получить список рецептов:
 
 ```
 GET /api/recipes/
@@ -239,10 +241,10 @@ HTTP 200 OK
 }
 ```
 
-## Полный список эндпоинтов и их параметров
+### Полный список эндпоинтов и их параметров
 
 Полный список можно посмотреть по адресу 127.0.0.1:8000/api/docs/
 
-# Автор:
+## Автор:
 
 Проект создан Паутовым Александром на основе репозитория [yandex-praktikum/foodgram-project-react](https://github.com/yandex-praktikum/foodgram-project-react)
