@@ -59,20 +59,20 @@
 sudo docker compose -f docker-compose.production.yml pull
 ```
 
-1. Перезапустить контейнеры:
+2. Перезапустить контейнеры:
 
 ```bash
 sudo docker compose -f docker-compose.production.yml down
 sudo docker compose -f docker-compose.production.yml up -d
 ```
 
-1. Выполнить создание базы данных:
+3. Выполнить создание базы данных:
 
 ```bash
 sudo docker compose -f docker-compose.production.yml exec backend python manage.py migrate
 ```
 
-1. Выполнить подготовку статики для сайта:
+4. Выполнить подготовку статики для сайта:
 
 ```bash
 sudo docker compose -f docker-compose.production.yml exec backend python manage.py collectstatic
