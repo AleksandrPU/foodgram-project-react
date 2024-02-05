@@ -2,7 +2,7 @@ import csv
 from io import StringIO
 
 from django.contrib.auth import get_user_model
-from django.db.models import Exists, F, OuterRef, Sum, Prefetch
+from django.db.models import Exists, F, OuterRef, Prefetch, Sum
 from django.http import HttpResponse
 from rest_framework import status, viewsets
 from rest_framework.decorators import action
@@ -11,8 +11,14 @@ from rest_framework.response import Response
 
 from foodgram_backend.paginations import CustomPageNumberPagination
 from recipes.filters import IngredientFilterSet, RecipeFilterSet
-from recipes.models import Favorite, Ingredient, Recipe, ShoppingCart, Tag, \
-    IngredientRecipe
+from recipes.models import (
+    Favorite,
+    Ingredient,
+    IngredientRecipe,
+    Recipe,
+    ShoppingCart,
+    Tag
+)
 from recipes.permissions import IsAuthorOrReadOnly
 from recipes.serializers import (
     FavoriteSerializer,
