@@ -2,7 +2,7 @@ import csv
 from io import StringIO
 
 from django.contrib.auth import get_user_model
-from django.db.models import Exists, F, OuterRef, Sum
+from django.db.models import Exists, F, OuterRef, Sum, Prefetch
 from django.http import HttpResponse
 from rest_framework import status, viewsets
 from rest_framework.decorators import action
@@ -11,7 +11,8 @@ from rest_framework.response import Response
 
 from foodgram_backend.paginations import CustomPageNumberPagination
 from recipes.filters import IngredientFilterSet, RecipeFilterSet
-from recipes.models import Favorite, Ingredient, Recipe, ShoppingCart, Tag
+from recipes.models import Favorite, Ingredient, Recipe, ShoppingCart, Tag, \
+    IngredientRecipe
 from recipes.permissions import IsAuthorOrReadOnly
 from recipes.serializers import (
     FavoriteSerializer,
@@ -39,9 +40,18 @@ class RecipeViewSet(viewsets.ModelViewSet):
 
     def get_queryset(self):
         user = self.request.user
+        queryset = Recipe.objects.all().prefetch_related(
+            'tags',
+            Prefetch('ingredients',
+                     queryset=IngredientRecipe.objects.all().select_related(
+                         'ingredient')),
+            Prefetch('author',
+                     queryset=User.objects.all().only(
+                         'email', 'id', 'username', 'first_name', 'last_name'))
+        )
         if not user.is_authenticated:
-            return Recipe.objects.all()
-        return (Recipe.objects
+            return queryset
+        return (queryset
                 .annotate(is_favorited=Exists(
                     Favorite.objects
                     .filter(recipe=OuterRef('pk'), user=user)))
