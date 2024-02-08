@@ -1,9 +1,5 @@
-import csv
-from io import StringIO
-
 from django.contrib.auth import get_user_model
-from django.db.models import Exists, F, OuterRef, Prefetch, Sum
-from django.http import HttpResponse
+from django.db.models import Exists, OuterRef, Prefetch
 from rest_framework import status, viewsets
 from rest_framework.decorators import action
 from rest_framework.permissions import IsAuthenticated
@@ -124,13 +120,7 @@ class RecipeViewSet(viewsets.ModelViewSet):
         permission_classes=(IsAuthenticated,)
     )
     def download_shopping_cart(self, request):
-        # return prepare_shopping_cart(Ingredient, request).delay()
         prepare_shopping_cart.delay(request)
-        # return HttpResponse(prepare_shopping_cart.delay(request), headers={
-        #     'Content-Type': 'text/csv',
-        #     'Content-Disposition':
-        #         'attachment; filename="shopping_cart.csv"',
-        # })
 
 
 class IngredientViewSet(viewsets.ReadOnlyModelViewSet):

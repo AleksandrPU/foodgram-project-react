@@ -10,7 +10,10 @@ from django.http import HttpResponse
 
 from recipes.models import Ingredient
 
-os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'foodgram_backend.settings')
+os.environ.setdefault(
+    'DJANGO_SETTINGS_MODULE',
+    'foodgram_backend.settings'
+)
 
 app = Celery('foodgram_backend')
 app.config_from_object('django.conf:settings')
@@ -42,4 +45,3 @@ def prepare_shopping_cart(request):
             'Content-Disposition':
                 'attachment; filename="shopping_cart.csv"',
         })
-        # return file.getvalue()
