@@ -20,8 +20,9 @@ services:
     env_file: ../.env.dev
     volumes:
       - ../backend:/app
-    command: >
-      sh -c "python manage.py runserver 0.0.0.0:8000"
+#    command: >
+#      sh -c "python manage.py runserver 0.0.0.0:8000"
+    command: python manage.py runserver 0.0.0.0:8000
     depends_on:
       - db
 
