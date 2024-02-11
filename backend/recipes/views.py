@@ -9,7 +9,6 @@ from rest_framework.decorators import action
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 
-from celery_app import prepare_shopping_cart
 from foodgram_backend.paginations import CustomPageNumberPagination
 from recipes.filters import IngredientFilterSet, RecipeFilterSet
 from recipes.models import (
@@ -124,13 +123,22 @@ class RecipeViewSet(viewsets.ModelViewSet):
         permission_classes=(IsAuthenticated,)
     )
     def download_shopping_cart(self, request):
-        # return prepare_shopping_cart(Ingredient, request).delay()
-        prepare_shopping_cart.delay(request)
-        # return HttpResponse(prepare_shopping_cart.delay(request), headers={
-        #     'Content-Type': 'text/csv',
-        #     'Content-Disposition':
-        #         'attachment; filename="shopping_cart.csv"',
-        # })
+        header = ('Ингредиент', 'Единица измерения', 'Количество')
+        query = (Ingredient.objects
+                 .filter(recipes__recipe__shopping__user=request.user)
+                 .annotate(amount=F('recipes__amount'))
+                 .annotate(sum_amount=Sum('amount'))
+                 .order_by('name'))
+        with StringIO() as file:
+            csv.writer(file).writerow(header)
+            csv.writer(file).writerows(
+                query.values_list('name', 'measurement_unit', 'sum_amount'))
+
+            return HttpResponse(file.getvalue(), headers={
+                'Content-Type': 'text/csv',
+                'Content-Disposition':
+                    'attachment; filename="shopping_cart.csv"',
+            })
 
 
 class IngredientViewSet(viewsets.ReadOnlyModelViewSet):
