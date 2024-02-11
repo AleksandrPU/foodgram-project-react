@@ -5,7 +5,7 @@ from io import StringIO
 
 from celery import Celery
 from django.conf import settings
-from django.db.models import F, Sum
+from django.db.models import Sum, F
 from django.http import HttpResponse
 
 from recipes.models import Ingredient

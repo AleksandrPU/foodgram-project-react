@@ -6,7 +6,6 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 
 from celery_app import prepare_shopping_cart
-
 from foodgram_backend.paginations import CustomPageNumberPagination
 from recipes.filters import IngredientFilterSet, RecipeFilterSet
 from recipes.models import (
