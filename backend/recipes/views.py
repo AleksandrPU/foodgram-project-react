@@ -1,9 +1,10 @@
-import csv
-from io import StringIO
+# import csv
+# from io import StringIO
 
 from django.contrib.auth import get_user_model
-from django.db.models import Exists, F, OuterRef, Prefetch, Sum
-from django.http import HttpResponse
+# from django.db.models import Exists, F, OuterRef, Prefetch, Sum
+from django.db.models import Exists, OuterRef, Prefetch
+# from django.http import HttpResponse
 from rest_framework import status, viewsets
 from rest_framework.decorators import action
 from rest_framework.permissions import IsAuthenticated
@@ -29,6 +30,7 @@ from recipes.serializers import (
     ShoppingCartSerializer,
     TagSerializer
 )
+from recipes.tasks import prepare_shopping_cart
 
 User = get_user_model()
 
@@ -123,22 +125,7 @@ class RecipeViewSet(viewsets.ModelViewSet):
         permission_classes=(IsAuthenticated,)
     )
     def download_shopping_cart(self, request):
-        header = ('Ингредиент', 'Единица измерения', 'Количество')
-        query = (Ingredient.objects
-                 .filter(recipes__recipe__shopping__user=request.user)
-                 .annotate(amount=F('recipes__amount'))
-                 .annotate(sum_amount=Sum('amount'))
-                 .order_by('name'))
-        with StringIO() as file:
-            csv.writer(file).writerow(header)
-            csv.writer(file).writerows(
-                query.values_list('name', 'measurement_unit', 'sum_amount'))
-
-            return HttpResponse(file.getvalue(), headers={
-                'Content-Type': 'text/csv',
-                'Content-Disposition':
-                    'attachment; filename="shopping_cart.csv"',
-            })
+        prepare_shopping_cart.delay(request.user.id)
 
 
 class IngredientViewSet(viewsets.ReadOnlyModelViewSet):
