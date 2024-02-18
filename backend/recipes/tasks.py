@@ -4,6 +4,7 @@ from io import StringIO
 from celery import shared_task
 from django.db.models import F, Sum
 from django.http import HttpResponse
+
 from recipes.models import Ingredient
 
 

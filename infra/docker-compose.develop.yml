@@ -22,7 +22,8 @@ services:
       - ../backend:/app
 #    command: >
 #      sh -c "python manage.py runserver 0.0.0.0:8000"
-    command: python manage.py runserver 0.0.0.0:8000
+#    command: python manage.py runserver 0.0.0.0:8000
+#    command: gunicorn --bind 0.0.0.0:8000 foodgram_backend.wsgi
     depends_on:
       - db
 
@@ -44,3 +45,38 @@ services:
 #      - ../docs/:/usr/share/nginx/html/api/docs/
 #      - static:/var/html/static/
 #      - media:/var/html/media/
+
+  redis:
+    image: redis:7.2.4-alpine
+    # hostname: redis
+
+  worker:
+    build:
+      context: ../backend/
+    # hostname: celery
+    # entrypoint: celery
+    # command: -A celery worker --loglevel=INFO
+    command: "celery -A celery worker --loglevel=INFO"
+    volumes:
+      - ../backend:/app
+    # links:
+    #   - redis
+    depends_on:
+      - redis
+      - backend
+
+#   flower:
+#     build:
+#       context: ../backend/
+#     hostname: flower
+#     entrypoint: celery
+#     command: -A celery flower
+#     volumes:
+#       - ../backend:/app
+#     links:
+#       - redis
+#     depends_on:
+#       - redis
+#     ports:
+#       - "5555:5555"
+

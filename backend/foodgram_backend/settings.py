@@ -1,4 +1,5 @@
 import os.path
+import sys
 from pathlib import Path
 
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -140,16 +141,46 @@ DJOSER = {
     'HIDE_USERS': False,
 }
 
+DEBUG_DB = True
 if DEBUG:
-    LOGGING = {
-        'version': 1,
-        'handlers': {
-            'console': {'class': 'logging.StreamHandler'}
-        },
-        'loggers': {
-            'django.db.backends': {
-                'handlers': ['console'],
-                'level': 'DEBUG'
+    if DEBUG_DB:
+        LOGGING = {
+            'version': 1,
+            'handlers': {
+                'console': {'class': 'logging.StreamHandler'}
+            },
+            'loggers': {
+                'django.db.backends': {
+                    'handlers': ['console'],
+                    'level': 'DEBUG'
+                }
             }
         }
-    }
+    else:
+        LOGGING = {
+            'version': 1,
+            'disable_existing_loggers': False,
+            'formatters': {
+                'default': {
+                    'format': '[DJANGO] %(levelname)s %(asctime)s %(module)s '
+                              '%(name)s.%(funcName)s:%(lineno)s: %(message)s'
+                },
+            },
+            'handlers': {
+                'console': {
+                    'level': 'DEBUG',
+                    'class': 'logging.StreamHandler',
+                    'formatter': 'default',
+                }
+            },
+            'loggers': {
+                'root': {
+                    'handlers': ['console'],
+                    'level': 'DEBUG',
+                    'propagate': True,
+                }
+            },
+        }
+
+# CELERY_BROKER_URL = 'redis://redis:6379/0'
+BROKER_URL = 'redis://redis:6379/0'
