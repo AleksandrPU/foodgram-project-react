@@ -11,6 +11,7 @@ services:
     env_file: ../.env.dev
     volumes:
       - pg_data:/var/lib/postgresql/data
+#    user: 1000:1000
 
   backend:
     build:
@@ -26,6 +27,7 @@ services:
 #    command: gunicorn --bind 0.0.0.0:8000 foodgram_backend.wsgi
     depends_on:
       - db
+#    user: 1000:1000
 
 #  frontend:
 #    image: aleksup/foodgram_frontend
@@ -49,14 +51,16 @@ services:
   redis:
     image: redis:7.2.4-alpine
     # hostname: redis
+#    user: 1000:1000
 
   worker:
     build:
       context: ../backend/
+    env_file: ../.env.dev
     # hostname: celery
     # entrypoint: celery
     # command: -A celery worker --loglevel=INFO
-    command: "celery -A celery worker --loglevel=INFO"
+    command: "celery -A foodgram_backend worker --loglevel=INFO"
     volumes:
       - ../backend:/app
     # links:
@@ -64,6 +68,7 @@ services:
     depends_on:
       - redis
       - backend
+#    user: 1000:1000
 
 #   flower:
 #     build:
@@ -79,4 +84,3 @@ services:
 #       - redis
 #     ports:
 #       - "5555:5555"
-

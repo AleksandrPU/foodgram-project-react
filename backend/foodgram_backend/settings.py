@@ -1,5 +1,4 @@
 import os.path
-import sys
 from pathlib import Path
 
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -182,5 +181,4 @@ if DEBUG:
             },
         }
 
-# CELERY_BROKER_URL = 'redis://redis:6379/0'
-BROKER_URL = 'redis://redis:6379/0'
+CELERY_BROKER_URL = 'redis://redis:6379/0'

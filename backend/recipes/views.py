@@ -1,9 +1,11 @@
 # import csv
 # from io import StringIO
+import logging
 
 from django.contrib.auth import get_user_model
 # from django.db.models import Exists, F, OuterRef, Prefetch, Sum
 from django.db.models import Exists, OuterRef, Prefetch
+from django.http import HttpResponseRedirect
 # from django.http import HttpResponse
 from rest_framework import status, viewsets
 from rest_framework.decorators import action
@@ -33,6 +35,8 @@ from recipes.serializers import (
 from recipes.tasks import prepare_shopping_cart
 
 User = get_user_model()
+
+logger = logging.getLogger(__name__)
 
 
 class TagViewSet(viewsets.ReadOnlyModelViewSet):
@@ -125,7 +129,16 @@ class RecipeViewSet(viewsets.ModelViewSet):
         permission_classes=(IsAuthenticated,)
     )
     def download_shopping_cart(self, request):
+        # return prepare_shopping_cart.delay(request.user.id)
+        # result = prepare_shopping_cart.delay(request.user.id)
+        # return result.collect()
         prepare_shopping_cart.delay(request.user.id)
+        logger.error('>>>>> down')
+        logger.error(self.kwargs)
+        logger.error(request.__dict__)
+        logger.error('>>>>> down')
+        # return HttpResponseRedirect(post.get_absolute_url())
+        return HttpResponseRedirect('/cart/')
 
 
 class IngredientViewSet(viewsets.ReadOnlyModelViewSet):
