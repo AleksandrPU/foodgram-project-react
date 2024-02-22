@@ -1,3 +1,6 @@
+import logging
+from typing import Optional
+
 from django.contrib.auth import get_user_model
 from django.db import transaction
 from rest_framework import serializers
@@ -15,8 +18,11 @@ from users.serializers import UserReadSerializer
 
 User = get_user_model()
 
+logger = logging.getLogger(__name__)
+
 
 class TagSerializer(serializers.ModelSerializer):
+    """ Serializer for Tag model."""
 
     class Meta:
         fields = ('id', 'name', 'color', 'slug')
@@ -91,7 +97,11 @@ class RecipeCreateSerializer(serializers.ModelSerializer):
             'cooking_time'
         )
 
-    def add_ingredients(self, recipe, ingredients):
+    def add_ingredients(
+            self,
+            recipe: Recipe,
+            ingredients: list
+    ) -> None:
         bulk_ingredients = [IngredientRecipe(
             recipe=recipe,
             ingredient=ingredient['id'],
@@ -100,7 +110,7 @@ class RecipeCreateSerializer(serializers.ModelSerializer):
         IngredientRecipe.objects.bulk_create(bulk_ingredients)
 
     @transaction.atomic
-    def create(self, validated_data):
+    def create(self, validated_data: dict) -> Recipe:
         tags = validated_data.pop('tags')
         ingredients = validated_data.pop('ingredients')
         recipe = Recipe.objects.create(**validated_data)
@@ -111,7 +121,7 @@ class RecipeCreateSerializer(serializers.ModelSerializer):
         return recipe
 
     @transaction.atomic
-    def update(self, recipe, validated_data):
+    def update(self, recipe: Recipe, validated_data: dict) -> Recipe:
         ingredients = validated_data.pop('ingredients')
         super().update(recipe, validated_data)
 
@@ -121,11 +131,11 @@ class RecipeCreateSerializer(serializers.ModelSerializer):
 
         return recipe
 
-    def to_representation(self, instance):
+    def to_representation(self, instance: Recipe):
         return RecipeReadSerializer(
             context=self.context).to_representation(instance)
 
-    def validate(self, data):
+    def validate(self, data: dict) -> dict:
         if 'tags' not in data:
             raise serializers.ValidationError(
                 {'errors': 'Отсутствует поле с тегами.'})
@@ -161,7 +171,7 @@ class RecipeShortSerializer(serializers.ModelSerializer):
         model = Recipe
         fields = ('id', 'name', 'image', 'cooking_time')
 
-    def get_image(self, obj):
+    def get_image(self, obj: Recipe) -> Optional[str]:
         if obj.image:
             return self.context["request"].build_absolute_uri(obj.image.url)
         return None
