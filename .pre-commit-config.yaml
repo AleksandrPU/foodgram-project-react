@@ -11,3 +11,5 @@ repos:
     hooks:
     -   id: flake8
         additional_dependencies: [flake8-isort]
+        exclude: ^(migrations/)
+        args: ['--config=setup.cfg']
