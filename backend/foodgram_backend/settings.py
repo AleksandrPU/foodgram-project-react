@@ -1,6 +1,9 @@
 import os.path
 from pathlib import Path
 
+import sentry_sdk
+from sentry_sdk.integrations.django import DjangoIntegration
+
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 SECRET_KEY = os.getenv('DJANGO_SECRET_KEY', 'django')
@@ -180,3 +183,13 @@ if DEBUG:
                 }
             },
         }
+
+sentry_sdk.init(
+    dsn="https://a1377f1b3ce8c7f1163d2052540d6414@o4506378766712832.ingest.sentry.io/4506796430393344",
+    integrations=[
+        DjangoIntegration(),
+    ],
+    traces_sample_rate=1.0,
+    send_default_pii=True,
+    profiles_sample_rate=1.0,
+)
