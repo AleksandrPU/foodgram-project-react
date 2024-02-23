@@ -1,4 +1,3 @@
-import logging
 from typing import Optional
 
 from django.contrib.auth import get_user_model
@@ -17,8 +16,6 @@ from recipes.models import (
 from users.serializers import UserReadSerializer
 
 User = get_user_model()
-
-logger = logging.getLogger(__name__)
 
 
 class TagSerializer(serializers.ModelSerializer):
