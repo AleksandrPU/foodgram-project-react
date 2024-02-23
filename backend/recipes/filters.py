@@ -16,9 +16,12 @@ class RecipeFilterSet(filters.FilterSet):
         queryset=Tag.objects.all()
     )
     is_favorited = filters.ChoiceFilter(
-        method='favorited_filter', choices=STATUS_CHOICES)
+        method='favorited_filter', choices=STATUS_CHOICES, label='В избранном')
     is_in_shopping_cart = filters.ChoiceFilter(
-        method='shopping_filter', choices=STATUS_CHOICES)
+        method='shopping_filter',
+        choices=STATUS_CHOICES,
+        label='В списке покупок'
+    )
 
     class Meta:
         model = Recipe
