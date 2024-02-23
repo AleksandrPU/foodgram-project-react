@@ -1,9 +1,9 @@
 import csv
 from io import StringIO
-from typing import Optional, Union, Type
+from typing import Optional, Type, Union
 
 from django.contrib.auth import get_user_model
-from django.db.models import Exists, F, OuterRef, Prefetch, Sum, QuerySet
+from django.db.models import Exists, F, OuterRef, Prefetch, QuerySet, Sum
 from django.http import HttpResponse
 from rest_framework import status, viewsets
 from rest_framework.decorators import action
