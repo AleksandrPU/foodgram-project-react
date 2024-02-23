@@ -17,7 +17,8 @@ User = get_user_model()
 
 class Tag(models.Model):
     name = models.CharField('Название', max_length=TAG_MAX_LENGTH)
-    color = models.CharField('Цвет', max_length=COLOR_MAX_LENGTH)
+    color = models.CharField(
+        'Цвет', max_length=COLOR_MAX_LENGTH, default='#0f0f0f')
     slug = models.SlugField('Тег', unique=True, max_length=TAG_MAX_LENGTH)
 
     class Meta:

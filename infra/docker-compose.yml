@@ -2,8 +2,9 @@ version: '3.3'
 
 volumes:
   pg_data:
-  static:
+  backend_static:
   media:
+  frontend_static:
 
 services:
   db:
@@ -18,24 +19,24 @@ services:
     depends_on:
       - db
     volumes:
-      - static:/app/static/
+      - backend_static:/app/static/
       - media:/app/media/
 
   frontend:
     image: aleksup/foodgram_frontend
     volumes:
-      - ../frontend/:/app/result_build/
+      - frontend_static:/app/result_build/build/
 
   nginx:
     image: nginx:1.19.3
     ports:
-      - 8080:80
+      - "8080:80"
     depends_on:
       - backend
       - frontend
     volumes:
       - ./nginx.conf:/etc/nginx/conf.d/default.conf
-      - ../frontend/build:/usr/share/nginx/html/
+      - frontend_static:/usr/share/nginx/html/
       - ../docs/:/usr/share/nginx/html/api/docs/
-      - static:/var/html/static/
+      - backend_static:/var/html/static/
       - media:/var/html/media/

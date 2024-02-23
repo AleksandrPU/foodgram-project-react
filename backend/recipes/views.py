@@ -1,13 +1,15 @@
 import csv
 from io import StringIO
+from typing import Optional, Type, Union
 
 from django.contrib.auth import get_user_model
-from django.db.models import Exists, F, OuterRef, Prefetch, Sum
+from django.db.models import Exists, F, OuterRef, Prefetch, QuerySet, Sum
 from django.http import HttpResponse
 from rest_framework import status, viewsets
 from rest_framework.decorators import action
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
+from rest_framework.serializers import Serializer
 
 from foodgram_backend.paginations import CustomPageNumberPagination
 from recipes.filters import IngredientFilterSet, RecipeFilterSet
@@ -44,7 +46,7 @@ class RecipeViewSet(viewsets.ModelViewSet):
     permission_classes = (IsAuthorOrReadOnly,)
     pagination_class = CustomPageNumberPagination
 
-    def get_queryset(self):
+    def get_queryset(self) -> QuerySet:
         user = self.request.user
         queryset = Recipe.objects.all().prefetch_related(
             'tags',
@@ -71,11 +73,19 @@ class RecipeViewSet(viewsets.ModelViewSet):
             return RecipeCreateSerializer
         return RecipeReadSerializer
 
-    def perform_create(self, serializer):
+    def perform_create(self, serializer: Serializer) -> Recipe:
         return serializer.save(author=self.request.user)
 
     def add_delete_favorite_shopping_cart(
-            self, request, model, model_serializer, pk=None):
+            self,
+            request,
+            model: Union[Type[Favorite], Type[ShoppingCart]],
+            model_serializer: Union[
+                Type[FavoriteSerializer],
+                Type[ShoppingCartSerializer]
+            ],
+            pk: Optional[int] = None
+    ) -> Response:
         user = request.user
 
         if request.method == 'POST':
@@ -105,7 +115,7 @@ class RecipeViewSet(viewsets.ModelViewSet):
             methods=['post', 'delete'],
             permission_classes=(IsAuthenticated,)
             )
-    def favorite(self, request, pk=None):
+    def favorite(self, request, pk: Optional[int] = None) -> Response:
         return self.add_delete_favorite_shopping_cart(
             request, Favorite, FavoriteSerializer, pk)
 
@@ -113,7 +123,7 @@ class RecipeViewSet(viewsets.ModelViewSet):
             methods=['post', 'delete'],
             permission_classes=(IsAuthenticated,)
             )
-    def shopping_cart(self, request, pk=None):
+    def shopping_cart(self, request, pk: Optional[int] = None) -> Response:
         return self.add_delete_favorite_shopping_cart(
             request, ShoppingCart, ShoppingCartSerializer, pk)
 
@@ -122,7 +132,7 @@ class RecipeViewSet(viewsets.ModelViewSet):
         methods=['get'],
         permission_classes=(IsAuthenticated,)
     )
-    def download_shopping_cart(self, request):
+    def download_shopping_cart(self, request) -> HttpResponse:
         header = ('Ингредиент', 'Единица измерения', 'Количество')
         query = (Ingredient.objects
                  .filter(recipes__recipe__shopping__user=request.user)
