@@ -36,11 +36,15 @@ User = get_user_model()
 
 
 class TagViewSet(viewsets.ReadOnlyModelViewSet):
+    """ViewSet Tag model."""
+
     queryset = Tag.objects.all()
     serializer_class = TagSerializer
 
 
 class RecipeViewSet(viewsets.ModelViewSet):
+    """ViewSet Recipe model."""
+
     filterset_class = RecipeFilterSet
     http_method_names = ('get', 'post', 'patch', 'delete')
     permission_classes = (IsAuthorOrReadOnly,)
@@ -133,6 +137,8 @@ class RecipeViewSet(viewsets.ModelViewSet):
         permission_classes=(IsAuthenticated,)
     )
     def download_shopping_cart(self, request) -> HttpResponse:
+        """Action for download shopping cart."""
+
         header = ('Ингредиент', 'Единица измерения', 'Количество')
         query = (Ingredient.objects
                  .filter(recipes__recipe__shopping__user=request.user)
@@ -152,6 +158,8 @@ class RecipeViewSet(viewsets.ModelViewSet):
 
 
 class IngredientViewSet(viewsets.ReadOnlyModelViewSet):
+    """ViewSet Ingredient model."""
+
     queryset = Ingredient.objects.all()
     serializer_class = IngredientSerializer
     filterset_class = IngredientFilterSet

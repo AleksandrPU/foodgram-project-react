@@ -15,7 +15,16 @@ from foodgram_backend.constants import (
 User = get_user_model()
 
 
-class Tag(models.Model):
+class BaseModel(models.Model):
+    """Model with describe objects attribute."""
+
+    objects = models.Manager()
+
+    class Meta:
+        abstract = True
+
+
+class Tag(BaseModel):
     name = models.CharField(
         'Название', max_length=TAG_MAX_LENGTH, unique=True)
     color = models.CharField(
@@ -31,7 +40,7 @@ class Tag(models.Model):
         return self.name[:STR_LENGTH_LIMIT]
 
 
-class Ingredient(models.Model):
+class Ingredient(BaseModel):
     name = models.CharField('Название', max_length=INGREDIENT_MAX_LENGTH)
     measurement_unit = models.CharField(
         'Единица измерения', max_length=UNIT_MAX_LENGTH)
@@ -46,7 +55,7 @@ class Ingredient(models.Model):
                 f'{self.measurement_unit}')
 
 
-class Recipe(models.Model):
+class Recipe(BaseModel):
     author = models.ForeignKey(
         User, verbose_name='Автор', on_delete=models.CASCADE)
     name = models.CharField('Название', max_length=RECIPE_MAX_LENGTH)
@@ -71,7 +80,9 @@ class Recipe(models.Model):
                 f' от {self.author.username[:STR_LENGTH_LIMIT]}')
 
 
-class IngredientRecipe(models.Model):
+class IngredientRecipe(BaseModel):
+    """Model relate Ingredient with amount to Recipe."""
+
     recipe = models.ForeignKey(
         Recipe,
         on_delete=models.CASCADE,
@@ -97,7 +108,9 @@ class IngredientRecipe(models.Model):
         return f'{self.recipe} {self.ingredient}'
 
 
-class Favorite(models.Model):
+class Favorite(BaseModel):
+    """Model favorite recipes for users."""
+
     user = models.ForeignKey(
         User, verbose_name='Пользователь', on_delete=models.CASCADE)
     recipe = models.ForeignKey(
@@ -115,7 +128,9 @@ class Favorite(models.Model):
                 f'{self.recipe.name[:STR_LENGTH_LIMIT]}')
 
 
-class ShoppingCart(models.Model):
+class ShoppingCart(BaseModel):
+    """Model shopping cart of recipe for users."""
+
     user = models.ForeignKey(
         User, verbose_name='Пользователь', on_delete=models.CASCADE)
     recipe = models.ForeignKey(

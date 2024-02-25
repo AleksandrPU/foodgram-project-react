@@ -5,6 +5,13 @@ from recipes.models import Ingredient, Recipe, Tag
 
 
 class RecipeFilterSet(filters.FilterSet):
+    """Filters for Recipe:
+        - author;
+        - tags;
+        - is_favorited;
+        - is_in_shopping_cart.
+    """
+
     STATUS_CHOICES = (
         (0, False),
         (1, True)
@@ -45,6 +52,8 @@ class RecipeFilterSet(filters.FilterSet):
 
 
 class IngredientFilterSet(filters.FilterSet):
+    """Filter Ingredient by name."""
+
     name = filters.CharFilter(lookup_expr='startswith')
 
     class Meta:
