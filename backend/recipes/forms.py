@@ -5,6 +5,8 @@ from recipes.models import Tag
 
 
 class TagForm(ModelForm):
+    """Form with color chooser."""
+
     class Meta:
         model = Tag
         fields = '__all__'

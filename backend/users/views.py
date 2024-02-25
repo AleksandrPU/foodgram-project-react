@@ -37,7 +37,8 @@ class CustomUserViewSet(UserViewSet):
 class SubscribeViewSet(viewsets.ViewSet):
     permission_classes = (IsAuthenticated,)
 
-    def create(self, request, user_id=None):
+    @staticmethod
+    def create(request, user_id=None):
         user = request.user
         get_object_or_404(User, pk=user_id)
 
@@ -56,7 +57,8 @@ class SubscribeViewSet(viewsets.ViewSet):
             status=status.HTTP_201_CREATED
         )
 
-    def destroy(self, request, user_id=None):
+    @staticmethod
+    def destroy(request, user_id=None):
         following = get_object_or_404(User, pk=user_id)
         user = request.user
 

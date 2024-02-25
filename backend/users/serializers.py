@@ -1,5 +1,6 @@
 from django.contrib.auth import get_user_model
 from rest_framework import serializers
+from rest_framework.serializers import UniqueTogetherValidator
 
 from foodgram_backend.constants import RECIPES_MAX_COUNT
 from recipes.models import Recipe
@@ -55,7 +56,8 @@ class UserRecipesSerializer(serializers.ModelSerializer):
             recipes = Recipe.objects.filter(author=obj)[:RECIPES_MAX_COUNT]
         return RecipeSerializer(recipes, many=True).data
 
-    def get_recipes_count(self, obj):
+    @staticmethod
+    def get_recipes_count(obj):
         return Recipe.objects.filter(author=obj).count()
 
 
@@ -65,7 +67,7 @@ class SubscriptionSerializer(serializers.ModelSerializer):
         model = Subscription
         fields = ('user', 'following')
         validators = [
-            serializers.UniqueTogetherValidator(
+            UniqueTogetherValidator(
                 queryset=Subscription.objects.all(),
                 fields=('user', 'following'),
                 message='Вы уже подписаны.'
