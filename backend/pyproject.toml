@@ -559,3 +559,8 @@ plugins = ["mypy_django_plugin.main", "mypy_drf_plugin.main"]
 
 [tool.django-stubs]
 django_settings_module = "foodgram_backend.settings"
+
+[tool.isort]
+known_local_folder = ["foodgram_backend", "recipes", "users"]
+skip = [".gitignore", ".dockerignore", "manage.py"]
+multi_line_output = 3
