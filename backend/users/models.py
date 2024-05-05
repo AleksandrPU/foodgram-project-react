@@ -26,11 +26,20 @@ class User(AbstractUser):
     email = models.EmailField(
         'Электронная почта',
         max_length=EMAIL_MAX_LENGTH,
-        unique=True, blank=False
+        unique=True
     )
-    password = models.CharField('Пароль', max_length=USERS_FIELD_MAX_LENGTH)
-    first_name = models.CharField('Имя', max_length=USERS_FIELD_MAX_LENGTH)
-    last_name = models.CharField('Фамилия', max_length=USERS_FIELD_MAX_LENGTH)
+    password = models.CharField(
+        'Пароль',
+        max_length=USERS_FIELD_MAX_LENGTH
+    )
+    first_name = models.CharField(
+        'Имя',
+        max_length=USERS_FIELD_MAX_LENGTH
+    )
+    last_name = models.CharField(
+        'Фамилия',
+        max_length=USERS_FIELD_MAX_LENGTH
+    )
     role = models.CharField(
         'Роль пользователя',
         choices=ROLES,
