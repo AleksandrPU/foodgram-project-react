@@ -1,9 +1,3 @@
-Сервер: foodgram.shd000.ru
-
-Логин: admin@example.com
-
-Пароль: iXKc4tYJZgNd2hFmK3HMnbDF9
-
 # Foodgram Project
 
 [![Push Status](https://github.com/AleksandrPU/foodgram-project-react/actions/workflows/main.yml/badge.svg?event=push)](https://github.com/AleksandrPU/foodgram-project-react/actions/workflows/main.yml/badge.svg?event=push)
